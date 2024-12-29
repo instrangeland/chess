@@ -10,8 +10,10 @@ import java.util.Collection;
  */
 public class ChessGame {
     private ChessBoard board;
+    private TeamColor currentPlayer;
     public ChessGame() {
-
+        board.resetBoard();
+        currentPlayer = TeamColor.WHITE;
     }
 
     /**
@@ -46,7 +48,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        if (board.getPiece(startPosition) == null)
+            return null;
+
     }
 
     /**
@@ -56,6 +60,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        attemptMove(move, this.board);
+    }
+
+    private void attemptMove(ChessMove move, ChessBoard board) throws InvalidMoveException {
         throw new RuntimeException("Not implemented");
     }
 
@@ -66,9 +74,11 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return boardInCheck(teamColor, this.board);
     }
+    public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
 
+    }
     /**
      * Determines if the given team is in checkmate
      *
