@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
-    private final TeamColor currentPlayer;
+    private TeamColor currentPlayer;
 
     public ChessGame() {
         board.resetBoard();
@@ -23,7 +23,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return currentPlayer;
     }
 
     /**
@@ -32,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        currentPlayer = team;
     }
 
     /**
@@ -60,11 +60,11 @@ public class ChessGame {
 
             executeMoveNoCheck(move, testBoard);
             if (!boardInCheck(thisTeam, testBoard)) {
-                System.out.println(move.toString()+" is invalid");
+                //System.out.println(move.toString()+" is valid");
                 validMoves.add(move);
             }
         }
-        return moves;
+        return validMoves;
     }
 
     /**
