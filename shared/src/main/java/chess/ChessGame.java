@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -11,7 +12,8 @@ import java.util.Set;
  */
 public class ChessGame {
     private ChessBoard board;
-    private TeamColor currentPlayer;
+    private final TeamColor currentPlayer;
+
     public ChessGame() {
         board.resetBoard();
         currentPlayer = TeamColor.WHITE;
@@ -34,17 +36,6 @@ public class ChessGame {
     }
 
     /**
-     * Enum identifying the 2 possible teams in a chess game
-     */
-    public enum TeamColor {
-        WHITE,
-        BLACK;
-        public TeamColor switchColor() {
-            return this == BLACK ? WHITE : BLACK;
-        }
-    }
-
-    /**
      * Gets a valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
@@ -53,20 +44,19 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Set<ChessMove> moves;
-        if (this.board.getPiece(startPosition) == null)
-            return null;
+        if (this.board.getPiece(startPosition) == null) return null;
         moves = (Set<ChessMove>) this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
-
-        TeamColor otherTeam = this.currentPlayer.switchColor();
+        TeamColor thisTeam = this.board.getPiece(startPosition).getTeamColor();
+        TeamColor otherTeam = thisTeam.switchColor();
         Set<ChessPosition> otherTeamPieces = this.board.findPiecesPositions(otherTeam);
-
-
         ChessBoard testBoard = new ChessBoard();
-        testBoard.setBoard(this.board.getBoard());
-
-
-
-
+        for (ChessMove move : moves) {
+            testBoard.setBoard(this.board.getBoard());
+            executeMoveNoCheck(move, testBoard);
+            if (boardInCheck(thisTeam, testBoard)) {
+                moves.remove(move);
+            }
+        }
         return moves;
     }
 
@@ -98,13 +88,23 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         return boardInCheck(teamColor, this.board);
     }
+
     public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
         TeamColor otherTeam = this.currentPlayer.switchColor();
         Set<ChessPosition> otherTeamPiecesPositions = this.board.findPiecesPositions(otherTeam);
+        Set<ChessMove> otherTeamMoves = new HashSet<>();
         for (ChessPosition chessPosition : otherTeamPiecesPositions) {
-            board.getPiece(chessPosition).pieceMoves()
+            otherTeamMoves.addAll(board.getPiece(chessPosition).pieceMoves(board, chessPosition));
         }
+        ChessPosition currentTeamKing = board.findPiecePosition(this.currentPlayer, ChessPiece.PieceType.KING);
+        for (ChessMove otherTeamMove : otherTeamMoves) {
+            if (otherTeamMove.getEndPosition() == currentTeamKing) {
+                return true;
+            }
+        }
+        return false;
     }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -127,6 +127,15 @@ public class ChessGame {
     }
 
     /**
+     * Gets the current chessboard
+     *
+     * @return the chessboard
+     */
+    public ChessBoard getBoard() {
+        return board;
+    }
+
+    /**
      * Sets this game's chessboard with a given board
      *
      * @param board the new board to use
@@ -136,11 +145,13 @@ public class ChessGame {
     }
 
     /**
-     * Gets the current chessboard
-     *
-     * @return the chessboard
+     * Enum identifying the 2 possible teams in a chess game
      */
-    public ChessBoard getBoard() {
-        return board;
+    public enum TeamColor {
+        WHITE, BLACK;
+
+        public TeamColor switchColor() {
+            return this == BLACK ? WHITE : BLACK;
+        }
     }
 }

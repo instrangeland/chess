@@ -41,6 +41,14 @@ public class ChessPosition {
         return new ChessPosition(this.row + offset, this.col);
     }
 
+    @Override
+    public String toString() {
+        return "ChessPosition{" +
+                "row=" + row +
+                ", col=" + col +
+                '}';
+    }
+
     public ChessPosition offsetColBy(int offset) {
         return new ChessPosition(this.row, this.col + offset);
     }

@@ -77,6 +77,19 @@ public class ChessBoard {
         }
     }
 
+    public ChessPosition findPiecePosition(ChessGame.TeamColor color, ChessPiece.PieceType pieceType) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                if (this.board[i][j] != null){
+                    if (this.board[i][j].getTeamColor() == color && this.board[i][j].getPieceType() == pieceType) {
+                        return new ChessPosition(i,j);
+                    }
+                }
+            }
+        }
+        throw new RuntimeException("Could not find piece");
+    }
+
     public Set<ChessPosition> findPiecesPositions(ChessGame.TeamColor color) {
         Set<ChessPosition> positions = new HashSet<>();
         for (int i = 1; i <= 8; i++) {
