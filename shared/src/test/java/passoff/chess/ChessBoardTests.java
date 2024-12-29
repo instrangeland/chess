@@ -43,7 +43,6 @@ public class ChessBoardTests {
                 |P|P|P|P|P|P|P|P|
                 |R|N|B|Q|K|B|N|R|
                 """);
-
         var actualBoard = new ChessBoard();
         actualBoard.resetBoard();
 

@@ -11,9 +11,10 @@ import java.util.Objects;
 public class ChessPosition {
     private final int row;
     private final int col;
+
     public ChessPosition(int row, int col) {
-        this.col=col;
-        this.row=row;
+        this.col = col;
+        this.row = row;
     }
 
     @Override
@@ -34,6 +35,18 @@ public class ChessPosition {
      */
     public int getRow() {
         return this.row;
+    }
+
+    public ChessPosition offsetRowBy(int offset) {
+        return new ChessPosition(this.row + offset, this.col);
+    }
+
+    public ChessPosition offsetColBy(int offset) {
+        return new ChessPosition(this.row, this.col + offset);
+    }
+
+    public ChessPosition offsetPosBy(int row, int col) {
+        return new ChessPosition(this.row + row, this.col + col);
     }
 
     /**
