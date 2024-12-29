@@ -44,6 +44,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Set<ChessMove> moves;
+        Set<ChessMove> validMoves = new HashSet<>();
         if (this.board.getPiece(startPosition) == null) return null;
         moves = (Set<ChessMove>) this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         TeamColor thisTeam = this.board.getPiece(startPosition).getTeamColor();
@@ -58,9 +59,9 @@ public class ChessGame {
             testBoard.setBoard(boardCopy);
 
             executeMoveNoCheck(move, testBoard);
-            if (boardInCheck(thisTeam, testBoard)) {
-                moves.remove(move);
+            if (!boardInCheck(thisTeam, testBoard)) {
                 System.out.println(move.toString()+" is invalid");
+                validMoves.add(move);
             }
         }
         return moves;
