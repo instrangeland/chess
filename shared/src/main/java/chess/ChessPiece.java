@@ -310,7 +310,7 @@ public class ChessPiece {
                 }
                 break;
         }
-        printMoves(moves);
+        //printMoves(moves);
         return moves;
     }
 }

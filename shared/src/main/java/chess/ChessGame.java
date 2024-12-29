@@ -51,10 +51,16 @@ public class ChessGame {
         Set<ChessPosition> otherTeamPieces = this.board.findPiecesPositions(otherTeam);
         ChessBoard testBoard = new ChessBoard();
         for (ChessMove move : moves) {
-            testBoard.setBoard(this.board.getBoard());
+            ChessPiece[][] boardCopy = this.board.getBoard().clone();
+            for (int i = 0; i<boardCopy.length; i++) {
+                boardCopy[i] = this.board.getBoard()[i].clone();
+            }
+            testBoard.setBoard(boardCopy);
+
             executeMoveNoCheck(move, testBoard);
             if (boardInCheck(thisTeam, testBoard)) {
                 moves.remove(move);
+                System.out.println(move.toString()+" is invalid");
             }
         }
         return moves;
@@ -90,15 +96,15 @@ public class ChessGame {
     }
 
     public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
-        TeamColor otherTeam = this.currentPlayer.switchColor();
+        TeamColor otherTeam = teamColor.switchColor();
         Set<ChessPosition> otherTeamPiecesPositions = this.board.findPiecesPositions(otherTeam);
         Set<ChessMove> otherTeamMoves = new HashSet<>();
         for (ChessPosition chessPosition : otherTeamPiecesPositions) {
             otherTeamMoves.addAll(board.getPiece(chessPosition).pieceMoves(board, chessPosition));
         }
-        ChessPosition currentTeamKing = board.findPiecePosition(this.currentPlayer, ChessPiece.PieceType.KING);
+        ChessPosition currentTeamKing = board.findPiecePosition(teamColor, ChessPiece.PieceType.KING);
         for (ChessMove otherTeamMove : otherTeamMoves) {
-            if (otherTeamMove.getEndPosition() == currentTeamKing) {
+            if (otherTeamMove.getEndPosition().equals(currentTeamKing)) {
                 return true;
             }
         }
