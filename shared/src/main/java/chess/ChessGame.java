@@ -11,7 +11,7 @@ import java.util.Set;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private ChessBoard board;
+    private ChessBoard board = new ChessBoard();
     private final TeamColor currentPlayer;
 
     public ChessGame() {

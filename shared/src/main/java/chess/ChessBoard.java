@@ -1,11 +1,13 @@
 package chess;
+
+import chess.ChessGame.TeamColor;
+import chess.ChessPiece.PieceType;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import chess.ChessPiece.PieceType;
-import chess.ChessGame.TeamColor;
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -13,6 +15,11 @@ import chess.ChessGame.TeamColor;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private ChessPiece[][] board;
+
+    public ChessBoard() {
+        board = new ChessPiece[8][8];
+    }
 
     public ChessPiece[][] getBoard() {
         return board;
@@ -22,12 +29,6 @@ public class ChessBoard {
         this.board = board;
     }
 
-    private ChessPiece[][] board = new ChessPiece[8][8];
-
-    public ChessBoard() {
-    }
-
-
     /**
      * Adds a chess piece to the chessboard
      *
@@ -35,7 +36,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getRow()-1][position.getColumn()-1] = piece;
+        board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -46,7 +47,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow()-1][position.getColumn()-1];
+        return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
     @Override
@@ -67,8 +68,8 @@ public class ChessBoard {
      */
 
     public void printPieceTypes() {
-        for (ChessPiece[] chessPieces:board) {
-            for (ChessPiece chessPiece:chessPieces) {
+        for (ChessPiece[] chessPieces : board) {
+            for (ChessPiece chessPiece : chessPieces) {
                 if (chessPiece != null) {
                     System.out.print(chessPiece.getPieceType().toString().charAt(0) + " ");
                 }
@@ -78,11 +79,11 @@ public class ChessBoard {
     }
 
     public ChessPosition findPiecePosition(ChessGame.TeamColor color, ChessPiece.PieceType pieceType) {
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                if (this.board[i][j] != null){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (this.board[i][j] != null) {
                     if (this.board[i][j].getTeamColor() == color && this.board[i][j].getPieceType() == pieceType) {
-                        return new ChessPosition(i,j);
+                        return new ChessPosition(i + 1, j + 1);
                     }
                 }
             }
@@ -92,11 +93,11 @@ public class ChessBoard {
 
     public Set<ChessPosition> findPiecesPositions(ChessGame.TeamColor color) {
         Set<ChessPosition> positions = new HashSet<>();
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 1; j <= 8; j++) {
-                if (this.board[i][j] != null){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (this.board[i][j] != null) {
                     if (this.board[i][j].getTeamColor() == color) {
-                        positions.add(new ChessPosition(i, j));
+                        positions.add(new ChessPosition(i + 1, j + 1));
                     }
                 }
             }
@@ -105,8 +106,8 @@ public class ChessBoard {
     }
 
     public void printPieceColors() {
-        for (ChessPiece[] chessPieces:board) {
-            for (ChessPiece chessPiece:chessPieces) {
+        for (ChessPiece[] chessPieces : board) {
+            for (ChessPiece chessPiece : chessPieces) {
                 if (chessPiece != null) {
                     System.out.print(chessPiece.getTeamColor().toString().charAt(0) + " ");
                 }
