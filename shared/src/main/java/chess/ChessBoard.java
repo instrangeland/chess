@@ -1,6 +1,8 @@
 package chess;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import chess.ChessPiece.PieceType;
 import chess.ChessGame.TeamColor;
@@ -12,10 +14,19 @@ import chess.ChessGame.TeamColor;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    public ChessPiece[][] getBoard() {
+        return board;
+    }
+
+    public void setBoard(ChessPiece[][] board) {
+        this.board = board;
+    }
+
+    private ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
     }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -65,6 +76,21 @@ public class ChessBoard {
             System.out.println();
         }
     }
+
+    public Set<ChessPosition> findPiecesPositions(ChessGame.TeamColor color) {
+        Set<ChessPosition> positions = new HashSet<>();
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                if (this.board[i][j] != null){
+                    if (this.board[i][j].getTeamColor() == color) {
+                        positions.add(new ChessPosition(i, j));
+                    }
+                }
+            }
+        }
+        return positions;
+    }
+
     public void printPieceColors() {
         for (ChessPiece[] chessPieces:board) {
             for (ChessPiece chessPiece:chessPieces) {

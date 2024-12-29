@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -37,7 +38,10 @@ public class ChessGame {
      */
     public enum TeamColor {
         WHITE,
-        BLACK
+        BLACK;
+        public TeamColor switchColor() {
+            return this == BLACK ? WHITE : BLACK;
+        }
     }
 
     /**
@@ -48,9 +52,22 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if (board.getPiece(startPosition) == null)
+        Set<ChessMove> moves;
+        if (this.board.getPiece(startPosition) == null)
             return null;
+        moves = (Set<ChessMove>) this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
 
+        TeamColor otherTeam = this.currentPlayer.switchColor();
+        Set<ChessPosition> otherTeamPieces = this.board.findPiecesPositions(otherTeam);
+
+
+        ChessBoard testBoard = new ChessBoard();
+        testBoard.setBoard(this.board.getBoard());
+
+
+
+
+        return moves;
     }
 
     /**
@@ -60,11 +77,16 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        attemptMove(move, this.board);
+        attemptMoveOnBoard(move, this.board);
     }
 
-    private void attemptMove(ChessMove move, ChessBoard board) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+    private void attemptMoveOnBoard(ChessMove move, ChessBoard board) throws InvalidMoveException {
+
+    }
+
+    private void executeMoveNoCheck(ChessMove move, ChessBoard board) {
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.addPiece(move.getStartPosition(), null);
     }
 
     /**
@@ -77,7 +99,11 @@ public class ChessGame {
         return boardInCheck(teamColor, this.board);
     }
     public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
-
+        TeamColor otherTeam = this.currentPlayer.switchColor();
+        Set<ChessPosition> otherTeamPiecesPositions = this.board.findPiecesPositions(otherTeam);
+        for (ChessPosition chessPosition : otherTeamPiecesPositions) {
+            board.getPiece(chessPosition).pieceMoves()
+        }
     }
     /**
      * Determines if the given team is in checkmate

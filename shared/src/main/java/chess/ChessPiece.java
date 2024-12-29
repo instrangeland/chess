@@ -64,7 +64,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
 
-    public Set<ChessMove> generatePossibleVerticalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
+    private Set<ChessMove> generatePossibleVerticalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         for (int i = 1; i <= maxLen; i++) {
             ChessPosition newPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn());
@@ -89,7 +89,7 @@ public class ChessPiece {
         return moves;
     }
 
-    public Set<ChessMove> generatePossibleHorizontalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
+    private Set<ChessMove> generatePossibleHorizontalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         for (int i = 1; i <= maxLen; i++) {
             ChessPosition newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i);
@@ -124,7 +124,7 @@ public class ChessPiece {
         return (row < 9 && row > 0 && col < 9 && col > 0);
     }
 
-    public Set<ChessMove> generatePossibleDiagonalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
+    private Set<ChessMove> generatePossibleDiagonalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         for (int i = 1; i <= maxLen; i++) {
             ChessPosition newPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
@@ -167,7 +167,7 @@ public class ChessPiece {
         return moves;
     }
 
-    public Set<ChessMove> generatePossiblePawnMoves(ChessBoard board, ChessGame.TeamColor color, ChessPosition myPosition) {
+    private Set<ChessMove> generatePossiblePawnMoves(ChessBoard board, ChessGame.TeamColor color, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         int startingRow, direction;
         if (this.pieceColor == ChessGame.TeamColor.BLACK) {
