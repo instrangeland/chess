@@ -118,9 +118,25 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
+
+    private boolean anyValidMoves(TeamColor teamColor) {
+        /*
+        get all of this color pieces
+        add any valid moves to a list
+        if no valid moves, in checkmate
+        */
         throw new RuntimeException("Not implemented");
     }
+
+    public boolean isInCheckmate(TeamColor teamColor) {
+        /* are we in check?
+           if no we're not
+           otherwise return not anyValidMoves()
+         */
+        throw new RuntimeException("Not implemented");
+    }
+
+
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
@@ -130,6 +146,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        /*
+        if not in check & no valid moves
+         */
         throw new RuntimeException("Not implemented");
     }
 
