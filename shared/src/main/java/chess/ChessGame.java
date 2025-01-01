@@ -48,7 +48,7 @@ public class ChessGame {
         if (this.board.getPiece(startPosition) == null) return null;
         moves = (Set<ChessMove>) this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         TeamColor thisTeam = this.board.getPiece(startPosition).getTeamColor();
-        TeamColor otherTeam = thisTeam.switchColor();
+        TeamColor otherTeam = thisTeam.oppositeColor();
         Set<ChessPosition> otherTeamPieces = this.board.findPiecesPositions(otherTeam);
         ChessBoard testBoard = new ChessBoard();
         for (ChessMove move : moves) {
@@ -78,7 +78,55 @@ public class ChessGame {
     }
 
     private void attemptMoveOnBoard(ChessMove move, ChessBoard board) throws InvalidMoveException {
+        //get valid moves
+        //test if it's in the set of valid moves
+        //if so, then we check our valid move list.
+        ChessPiece currentPiece = board.getPiece(move.getStartPosition());
 
+        if (currentPiece == null)
+            throw new InvalidMoveException();
+        TeamColor pieceColor = currentPiece.getTeamColor();
+        if (pieceColor != currentPlayer) {
+            throw new InvalidMoveException();
+        }
+        Set<ChessMove> validMoves = (Set<ChessMove>) validMoves(move.getStartPosition());
+        if (validMoves.contains(move)) {
+            //now, our validmove doesn't have the information on which piece to kill if required. So we look it up in
+            //validlist to get info on en passant kill piece
+            ChessMove moveWithEnPassantInfo = null;
+            for (ChessMove testMove: validMoves) {
+                System.out.print(testMove.toString() + " ");
+                System.out.println(move.toString());
+                System.out.println(move.equals(testMove));
+                if (testMove.equals(move)) {
+                    moveWithEnPassantInfo = testMove;
+                }
+            }
+
+
+
+            if (move.getPromotionPiece() != null) { //we still need to rely on the o.g. for promotion info obviously
+                assert currentPiece != null;
+                assert currentPiece.getPieceType() == ChessPiece.PieceType.PAWN;
+                board.getPiece(move.getStartPosition()).setPieceType(move.getPromotionPiece());
+            }
+
+            if (moveWithEnPassantInfo.getEnPassantPieceToKill() != null) {
+                assert currentPiece.getPieceType() == ChessPiece.PieceType.PAWN;
+                ChessPiece pieceToKill = board.getPiece(moveWithEnPassantInfo.getEnPassantPieceToKill());
+                assert pieceToKill != null;
+                assert pieceToKill.getPieceType() == ChessPiece.PieceType.PAWN;
+                assert pieceToKill.isDoubleMovedForAlPassant();
+                board.addPiece(moveWithEnPassantInfo.getEnPassantPieceToKill(), null); //the piece is killed
+            }
+            executeMoveNoCheck(move, board);
+
+            //remove en passant from any enemy pawns
+        } else {
+            throw new InvalidMoveException();
+        }
+        currentPlayer = currentPlayer.oppositeColor();
+        
     }
 
     private void executeMoveNoCheck(ChessMove move, ChessBoard board) {
@@ -97,7 +145,7 @@ public class ChessGame {
     }
 
     public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
-        TeamColor otherTeam = teamColor.switchColor();
+        TeamColor otherTeam = teamColor.oppositeColor();
         Set<ChessPosition> otherTeamPiecesPositions = this.board.findPiecesPositions(otherTeam);
         Set<ChessMove> otherTeamMoves = new HashSet<>();
         for (ChessPosition chessPosition : otherTeamPiecesPositions) {
@@ -119,21 +167,24 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
 
-    private boolean anyValidMoves(TeamColor teamColor) {
+    private boolean noValidMoves(TeamColor teamColor) {
         /*
         get all of this color pieces
         add any valid moves to a list
         if no valid moves, in checkmate
         */
-        throw new RuntimeException("Not implemented");
+        Set<ChessMove> possibleMoves = new HashSet<>();
+        Set<ChessPosition> myPositions = board.findPiecesPositions(teamColor);
+        for (ChessPosition position : myPositions) {
+            possibleMoves.addAll(validMoves(position));
+        }
+        return possibleMoves.isEmpty();
     }
 
     public boolean isInCheckmate(TeamColor teamColor) {
-        /* are we in check?
-           if no we're not
-           otherwise return not anyValidMoves()
-         */
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor))
+            return false;
+        return !noValidMoves(teamColor);
     }
 
 
@@ -146,10 +197,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        /*
-        if not in check & no valid moves
-         */
-        throw new RuntimeException("Not implemented");
+        return noValidMoves(teamColor);
     }
 
     /**
@@ -176,7 +224,7 @@ public class ChessGame {
     public enum TeamColor {
         WHITE, BLACK;
 
-        public TeamColor switchColor() {
+        public TeamColor oppositeColor() {
             return this == BLACK ? WHITE : BLACK;
         }
     }

@@ -15,12 +15,27 @@ public class ChessPiece {
             {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
     };
 
+    public boolean isDoubleMovedForAlPassant() {
+        return doubleMovedForAlPassant;
+    }
+
+    public void setDoubleMovedForAlPassant(boolean doubleMovedForAlPassant) {
+        this.doubleMovedForAlPassant = doubleMovedForAlPassant;
+    }
+
+    private boolean doubleMovedForAlPassant;
     private final ChessGame.TeamColor pieceColor;
-    private final PieceType pieceType;
+
+    public void setPieceType(PieceType pieceType) {
+        this.pieceType = pieceType;
+    }
+
+    private PieceType pieceType;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.pieceType = type;
+        this.doubleMovedForAlPassant = false;
     }
 
     /**
@@ -29,6 +44,7 @@ public class ChessPiece {
     public enum PieceType {
         KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -63,6 +79,8 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+
+
 
     private Set<ChessMove> generatePossibleVerticalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
@@ -235,6 +253,15 @@ public class ChessPiece {
             }
         }
         newPosition = myPosition.offsetPosBy(direction, -1);
+        moves.addAll(addPawnCaptureMoves(board, color, myPosition, newPosition, promoteRow, direction));
+        newPosition = myPosition.offsetPosBy(direction, 1);
+        moves.addAll(addPawnCaptureMoves(board, color, myPosition, newPosition, promoteRow, direction));
+        return moves;
+    }
+
+    private Set<ChessMove> addPawnCaptureMoves(ChessBoard board, ChessGame.TeamColor color, ChessPosition myPosition,
+                                               ChessPosition newPosition, int promoteRow, int direction) {
+        Set<ChessMove> moves = new HashSet<>();
         if (posInBounds(newPosition)) {
             if (board.getPiece(newPosition) != null && board.getPiece(newPosition).pieceColor != pieceColor) {
                 if (promoteRow == newPosition.getRow()) {
@@ -245,24 +272,34 @@ public class ChessPiece {
                 } else {
                     moves.add(new ChessMove(myPosition, newPosition, null));
                 }
-            }
-        }
-        newPosition = myPosition.offsetPosBy(direction, 1);
-        if (posInBounds(newPosition)) {
-            if (board.getPiece(newPosition) != null && board.getPiece(newPosition).pieceColor != pieceColor) {
-                if (promoteRow == newPosition.getRow()) {
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
-                } else {
-                    moves.add(new ChessMove(myPosition, newPosition, null));
+            } else if (board.getPiece(newPosition) == null) {
+                //check if square next to you is a pawn
+                ChessPosition elPassantCheckPosition = newPosition.offsetRowBy(-direction);
+                if (board.getPiece(elPassantCheckPosition) != null) {
+                    ChessPiece pieceToCheck = board.getPiece(elPassantCheckPosition);
+                    if (pieceToCheck.pieceType == PieceType.PAWN && pieceToCheck.pieceColor != color &&
+                            pieceToCheck.doubleMovedForAlPassant) {
+                        if (promoteRow == newPosition.getRow()) {
+                            moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN, elPassantCheckPosition));
+                            moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT, elPassantCheckPosition));
+                            moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK, elPassantCheckPosition));
+                            moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP, elPassantCheckPosition));
+                        } else {
+                            moves.add(new ChessMove(myPosition, newPosition, null, elPassantCheckPosition));
+                        }
+                    }
                 }
             }
         }
         return moves;
     }
-
+    public static Set<ChessPiece> convertPiecesFromPositions(ChessBoard board, Set<ChessPosition> positions) {
+        Set<ChessPiece> pieces = new HashSet<>();
+        for (ChessPosition position: positions) {
+            pieces.add(board.getPiece(position));
+        }
+        return pieces;
+    }
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in

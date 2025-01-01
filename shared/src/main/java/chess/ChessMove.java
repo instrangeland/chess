@@ -12,17 +12,39 @@ public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
+
+    public ChessPosition getEnPassantPieceToKill() {
+        return enPassantPieceToKill;
+    }
+
+    public void setEnPassantPieceToKill(ChessPosition enPassantPieceToKill) {
+        this.enPassantPieceToKill = enPassantPieceToKill;
+    }
+
+    private ChessPosition enPassantPieceToKill;
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+                     ChessPiece.PieceType promotionPiece, ChessPosition enPassantPieceToKill) {
+        this.startPosition=startPosition;
+        this.endPosition=endPosition;
+        this.promotionPiece=promotionPiece;
+        this.enPassantPieceToKill = enPassantPieceToKill;
+    }
+
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition=startPosition;
         this.endPosition=endPosition;
         this.promotionPiece=promotionPiece;
+        this.enPassantPieceToKill = null;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ChessMove chessMove = (ChessMove) o;
+        System.out.print(Objects.equals(startPosition, chessMove.startPosition));
+        System.out.print(Objects.equals(endPosition, chessMove.endPosition));
+        System.out.println(Objects.equals(promotionPiece, chessMove.promotionPiece));
         return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
