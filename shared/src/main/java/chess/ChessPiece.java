@@ -231,11 +231,11 @@ public class ChessPiece {
         if (myPosition.getRow() == startingRow) { //so the piece hasn't moved yet.
             newPosition = myPosition.offsetRowBy(direction);
             if (board.getPiece(newPosition) == null) {
-                moves.add(new ChessMove(myPosition, newPosition, null));
+                moves.add(new ChessMove(myPosition, newPosition, null, false));
                 //so we know we can move one, so can we move two?
                 newPosition = myPosition.offsetRowBy(direction * 2);
                 if (board.getPiece(newPosition) == null) {
-                    moves.add(new ChessMove(myPosition, newPosition, null));
+                    moves.add(new ChessMove(myPosition, newPosition, null, true));
                 }
             }
         } else {

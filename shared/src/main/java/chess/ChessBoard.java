@@ -50,6 +50,18 @@ public class ChessBoard {
         return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
+    public void clearAllEnPassantable(TeamColor color) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (this.board[i][j] != null) {
+                    if (this.board[i][j].getTeamColor() == color) {
+                        this.board[i][j].setDoubleMovedForAlPassant(false);
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

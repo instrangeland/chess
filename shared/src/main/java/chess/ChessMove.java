@@ -12,6 +12,7 @@ public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
+    private boolean wouldCauseEnPassantable = false;
 
     public ChessPosition getEnPassantPieceToKill() {
         return enPassantPieceToKill;
@@ -28,6 +29,7 @@ public class ChessMove {
         this.endPosition=endPosition;
         this.promotionPiece=promotionPiece;
         this.enPassantPieceToKill = enPassantPieceToKill;
+        this.wouldCauseEnPassantable = false;
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -36,15 +38,22 @@ public class ChessMove {
         this.endPosition=endPosition;
         this.promotionPiece=promotionPiece;
         this.enPassantPieceToKill = null;
+        this.wouldCauseEnPassantable = false;
+    }
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+                     ChessPiece.PieceType promotionPiece, boolean willCauseEnPassant) {
+        this.startPosition=startPosition;
+        this.endPosition=endPosition;
+        this.promotionPiece=promotionPiece;
+        this.enPassantPieceToKill = null;
+        this.wouldCauseEnPassantable = willCauseEnPassant;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ChessMove chessMove = (ChessMove) o;
-        System.out.print(Objects.equals(startPosition, chessMove.startPosition));
-        System.out.print(Objects.equals(endPosition, chessMove.endPosition));
-        System.out.println(Objects.equals(promotionPiece, chessMove.promotionPiece));
         return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
@@ -75,5 +84,13 @@ public class ChessMove {
      */
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
+    }
+
+    public boolean isWouldCauseEnPassantable() {
+        return wouldCauseEnPassantable;
+    }
+
+    public void setWouldCauseEnPassantable(boolean wouldCauseEnPassantable) {
+        this.wouldCauseEnPassantable = wouldCauseEnPassantable;
     }
 }

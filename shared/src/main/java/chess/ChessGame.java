@@ -86,7 +86,6 @@ public class ChessGame {
         //test if it's in the set of valid moves
         //if so, then we check our valid move list.
         ChessPiece currentPiece = board.getPiece(move.getStartPosition());
-
         if (currentPiece == null)
             throw new InvalidMoveException();
         TeamColor pieceColor = currentPiece.getTeamColor();
@@ -99,22 +98,23 @@ public class ChessGame {
             //validlist to get info on en passant kill piece
             ChessMove moveWithEnPassantInfo = null;
             for (ChessMove testMove: validMoves) {
-                System.out.print(testMove.toString() + " ");
-                System.out.println(move.toString());
-                System.out.println(move.equals(testMove));
+                System.out.print("Looking for en passantable move... ");
                 if (testMove.equals(move)) {
+                    System.out.println("found.");
                     moveWithEnPassantInfo = testMove;
                 }
             }
-
-
+            System.out.println("done");
 
             if (move.getPromotionPiece() != null) { //we still need to rely on the o.g. for promotion info obviously
-                assert currentPiece != null;
+
                 assert currentPiece.getPieceType() == ChessPiece.PieceType.PAWN;
                 board.getPiece(move.getStartPosition()).setPieceType(move.getPromotionPiece());
             }
-
+            assert moveWithEnPassantInfo != null;
+            if (moveWithEnPassantInfo.isWouldCauseEnPassantable()) {
+                currentPiece.setDoubleMovedForAlPassant(true);
+            }
             if (moveWithEnPassantInfo.getEnPassantPieceToKill() != null) {
                 assert currentPiece.getPieceType() == ChessPiece.PieceType.PAWN;
                 ChessPiece pieceToKill = board.getPiece(moveWithEnPassantInfo.getEnPassantPieceToKill());
@@ -125,12 +125,14 @@ public class ChessGame {
             }
             executeMoveNoCheck(move, board);
 
-            //remove en passant from any enemy pawns
+
+
         } else {
             throw new InvalidMoveException();
         }
         currentPlayer = currentPlayer.oppositeColor();
-        
+        board.clearAllEnPassantable(currentPlayer);
+
     }
 
     private void executeMoveNoCheck(ChessMove move, ChessBoard board) {
