@@ -50,18 +50,22 @@ public class ChessGame {
         TeamColor thisTeam = this.board.getPiece(startPosition).getTeamColor();
         TeamColor otherTeam = thisTeam.oppositeColor();
         Set<ChessPosition> otherTeamPieces = this.board.findPiecesPositions(otherTeam);
-        ChessBoard testBoard = new ChessBoard();
-        for (ChessMove move : moves) {
-            ChessPiece[][] boardCopy = this.board.getBoard().clone();
-            for (int i = 0; i<boardCopy.length; i++) {
-                boardCopy[i] = this.board.getBoard()[i].clone();
-            }
-            testBoard.setBoard(boardCopy);
+        if (otherTeamPieces == null) {
+            validMoves = moves;
+        } else {
+            ChessBoard testBoard = new ChessBoard();
+            for (ChessMove move : moves) {
+                ChessPiece[][] boardCopy = this.board.getBoard().clone();
+                for (int i = 0; i < boardCopy.length; i++) {
+                    boardCopy[i] = this.board.getBoard()[i].clone();
+                }
+                testBoard.setBoard(boardCopy);
 
-            executeMoveNoCheck(move, testBoard);
-            if (!boardInCheck(thisTeam, testBoard)) {
-                //System.out.println(move.toString()+" is valid");
-                validMoves.add(move);
+                executeMoveNoCheck(move, testBoard);
+                if (!boardInCheck(thisTeam, testBoard)) {
+                    //System.out.println(move.toString()+" is valid");
+                    validMoves.add(move);
+                }
             }
         }
         return validMoves;
@@ -145,13 +149,15 @@ public class ChessGame {
     }
 
     public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
+        ChessPosition currentTeamKing = board.findPiecePosition(teamColor, ChessPiece.PieceType.KING);
+        if (currentTeamKing == null)
+            return false;
         TeamColor otherTeam = teamColor.oppositeColor();
         Set<ChessPosition> otherTeamPiecesPositions = this.board.findPiecesPositions(otherTeam);
         Set<ChessMove> otherTeamMoves = new HashSet<>();
         for (ChessPosition chessPosition : otherTeamPiecesPositions) {
             otherTeamMoves.addAll(board.getPiece(chessPosition).pieceMoves(board, chessPosition));
         }
-        ChessPosition currentTeamKing = board.findPiecePosition(teamColor, ChessPiece.PieceType.KING);
         for (ChessMove otherTeamMove : otherTeamMoves) {
             if (otherTeamMove.getEndPosition().equals(currentTeamKing)) {
                 return true;

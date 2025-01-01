@@ -88,7 +88,7 @@ public class ChessBoard {
                 }
             }
         }
-        throw new RuntimeException("Could not find piece");
+        return null;
     }
 
     public Set<ChessPosition> findPiecesPositions(ChessGame.TeamColor color) {
