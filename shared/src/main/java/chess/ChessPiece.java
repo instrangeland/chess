@@ -26,6 +26,16 @@ public class ChessPiece {
     private boolean doubleMovedForAlPassant;
     private final ChessGame.TeamColor pieceColor;
 
+    public boolean isHasMoved() {
+        return hasMoved;
+    }
+
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
+    }
+
+    private boolean hasMoved = false;
+
     public void setPieceType(PieceType pieceType) {
         this.pieceType = pieceType;
     }
@@ -307,6 +317,22 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+
+    public boolean checkForRookInLine(ChessBoard board, int direction, ChessPosition pos) {
+        ChessPosition testPos = pos;
+        while (posInBounds(testPos)) {
+            testPos.offsetColBy(direction);
+            ChessPiece locPiece = board.getPiece(testPos);
+            if (locPiece != null) {
+                if (locPiece.pieceColor == this.pieceColor &&
+                        locPiece.pieceType == PieceType.ROOK && !locPiece.isHasMoved()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         switch (this.pieceType) {

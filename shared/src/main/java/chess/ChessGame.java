@@ -124,9 +124,7 @@ public class ChessGame {
                 board.addPiece(moveWithEnPassantInfo.getEnPassantPieceToKill(), null); //the piece is killed
             }
             executeMoveNoCheck(move, board);
-
-
-
+            currentPiece.setHasMoved(true);
         } else {
             throw new InvalidMoveException();
         }
