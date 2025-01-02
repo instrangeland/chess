@@ -14,6 +14,15 @@ public class ChessMove {
     private final ChessPiece.PieceType promotionPiece;
     private boolean wouldCauseEnPassantable = false;
 
+    public ChessMove getCastlingRookMove() {
+        return castlingRookMove;
+    }
+
+    public void setCastlingRookMove(ChessMove castlingRookMove) {
+        this.castlingRookMove = castlingRookMove;
+    }
+
+    private ChessMove castlingRookMove = null;
     public ChessPosition getEnPassantPieceToKill() {
         return enPassantPieceToKill;
     }
@@ -30,6 +39,16 @@ public class ChessMove {
         this.promotionPiece=promotionPiece;
         this.enPassantPieceToKill = enPassantPieceToKill;
         this.wouldCauseEnPassantable = false;
+        this.castlingRookMove = null;
+    }
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+        this.startPosition=startPosition;
+        this.endPosition=endPosition;
+        this.promotionPiece=null;
+        this.enPassantPieceToKill = null;
+        this.wouldCauseEnPassantable = false;
+        this.castlingRookMove = null;
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -39,6 +58,7 @@ public class ChessMove {
         this.promotionPiece=promotionPiece;
         this.enPassantPieceToKill = null;
         this.wouldCauseEnPassantable = false;
+        this.castlingRookMove = null;
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -48,8 +68,18 @@ public class ChessMove {
         this.promotionPiece=promotionPiece;
         this.enPassantPieceToKill = null;
         this.wouldCauseEnPassantable = willCauseEnPassant;
+        this.castlingRookMove = null;
     }
 
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece,
+                     ChessMove castlingRookMove) {
+        this.startPosition=startPosition;
+        this.endPosition=endPosition;
+        this.promotionPiece=null; //look, this is here just for the fact that I can't change the test code. It *really* likes nulls.
+        this.enPassantPieceToKill = null;
+        this.wouldCauseEnPassantable = false;
+        this.castlingRookMove = castlingRookMove;
+    }
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

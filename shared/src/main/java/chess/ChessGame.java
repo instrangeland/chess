@@ -96,12 +96,12 @@ public class ChessGame {
         if (validMoves.contains(move)) {
             //now, our validmove doesn't have the information on which piece to kill if required. So we look it up in
             //validlist to get info on en passant kill piece
-            ChessMove moveWithEnPassantInfo = null;
+            ChessMove moveWithExtraInfo = null;
             for (ChessMove testMove: validMoves) {
                 System.out.print("Looking for en passantable move... ");
                 if (testMove.equals(move)) {
                     System.out.println("found.");
-                    moveWithEnPassantInfo = testMove;
+                    moveWithExtraInfo = testMove;
                 }
             }
             System.out.println("done");
@@ -111,17 +111,23 @@ public class ChessGame {
                 assert currentPiece.getPieceType() == ChessPiece.PieceType.PAWN;
                 board.getPiece(move.getStartPosition()).setPieceType(move.getPromotionPiece());
             }
-            assert moveWithEnPassantInfo != null;
-            if (moveWithEnPassantInfo.isWouldCauseEnPassantable()) {
+            assert moveWithExtraInfo != null;
+
+            if (moveWithExtraInfo.getCastlingRookMove() != null) {
+                executeMoveNoCheck(moveWithExtraInfo.getCastlingRookMove(), board);
+                executeMoveNoCheck(moveWithExtraInfo, board);
+            }
+
+            if (moveWithExtraInfo.isWouldCauseEnPassantable()) {
                 currentPiece.setDoubleMovedForAlPassant(true);
             }
-            if (moveWithEnPassantInfo.getEnPassantPieceToKill() != null) {
+            if (moveWithExtraInfo.getEnPassantPieceToKill() != null) {
                 assert currentPiece.getPieceType() == ChessPiece.PieceType.PAWN;
-                ChessPiece pieceToKill = board.getPiece(moveWithEnPassantInfo.getEnPassantPieceToKill());
+                ChessPiece pieceToKill = board.getPiece(moveWithExtraInfo.getEnPassantPieceToKill());
                 assert pieceToKill != null;
                 assert pieceToKill.getPieceType() == ChessPiece.PieceType.PAWN;
                 assert pieceToKill.isDoubleMovedForAlPassant();
-                board.addPiece(moveWithEnPassantInfo.getEnPassantPieceToKill(), null); //the piece is killed
+                board.addPiece(moveWithExtraInfo.getEnPassantPieceToKill(), null); //the piece is killed
             }
             executeMoveNoCheck(move, board);
             currentPiece.setHasMoved(true);

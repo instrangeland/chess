@@ -10,10 +10,45 @@ import java.util.*;
  */
 public class ChessPiece {
 
-    private int[][] knightOffsets = {
+    private final ChessGame.TeamColor pieceColor;
+    private final int[][] knightOffsets = {
             {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
             {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
     };
+    private boolean doubleMovedForAlPassant;
+    private boolean hasMoved = false;
+    private PieceType pieceType;
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this.pieceColor = pieceColor;
+        this.pieceType = type;
+        this.doubleMovedForAlPassant = false;
+    }
+
+    public static boolean posInBounds(int row, int col) {
+        return (row < 9 && row > 0 && col < 9 && col > 0);
+    }
+
+    public static boolean posInBounds(ChessPosition chessPosition) {
+        int row = chessPosition.getRow();
+        int col = chessPosition.getColumn();
+        return (row < 9 && row > 0 && col < 9 && col > 0);
+    }
+
+    public static void printMoves(Set<ChessMove> moves) {
+        for (ChessMove move:moves) {
+            System.out.print(move.getEndPosition().toString()+", ");
+        }
+        System.out.println();
+    }
+
+    public static Set<ChessPiece> convertPiecesFromPositions(ChessBoard board, Set<ChessPosition> positions) {
+        Set<ChessPiece> pieces = new HashSet<>();
+        for (ChessPosition position: positions) {
+            pieces.add(board.getPiece(position));
+        }
+        return pieces;
+    }
 
     public boolean isDoubleMovedForAlPassant() {
         return doubleMovedForAlPassant;
@@ -23,9 +58,6 @@ public class ChessPiece {
         this.doubleMovedForAlPassant = doubleMovedForAlPassant;
     }
 
-    private boolean doubleMovedForAlPassant;
-    private final ChessGame.TeamColor pieceColor;
-
     public boolean isHasMoved() {
         return hasMoved;
     }
@@ -33,28 +65,6 @@ public class ChessPiece {
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
     }
-
-    private boolean hasMoved = false;
-
-    public void setPieceType(PieceType pieceType) {
-        this.pieceType = pieceType;
-    }
-
-    private PieceType pieceType;
-
-    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
-        this.pieceColor = pieceColor;
-        this.pieceType = type;
-        this.doubleMovedForAlPassant = false;
-    }
-
-    /**
-     * The various different chess piece options
-     */
-    public enum PieceType {
-        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -80,6 +90,10 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return pieceType;
+    }
+
+    public void setPieceType(PieceType pieceType) {
+        this.pieceType = pieceType;
     }
 
     /**
@@ -154,22 +168,6 @@ public class ChessPiece {
         return moves;
     }
 
-    public static boolean posInBounds(int row, int col) {
-        return (row < 9 && row > 0 && col < 9 && col > 0);
-    }
-
-    public static boolean posInBounds(ChessPosition chessPosition) {
-        int row = chessPosition.getRow();
-        int col = chessPosition.getColumn();
-        return (row < 9 && row > 0 && col < 9 && col > 0);
-    }
-
-    public static void printMoves(Set<ChessMove> moves) {
-        for (ChessMove move:moves) {
-            System.out.print(move.getEndPosition().toString()+", ");
-        }
-        System.out.println();
-    }
     private Set<ChessMove> generatePossibleDiagonalMoves(ChessBoard board, int maxLen, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         for (int i = 1; i <= maxLen; i++) {
@@ -303,13 +301,52 @@ public class ChessPiece {
         }
         return moves;
     }
-    public static Set<ChessPiece> convertPiecesFromPositions(ChessBoard board, Set<ChessPosition> positions) {
-        Set<ChessPiece> pieces = new HashSet<>();
-        for (ChessPosition position: positions) {
-            pieces.add(board.getPiece(position));
+
+    /**
+     * checks if (and finds) the valid rook in the direction given
+     * @param board Chessboard
+     * @param direction either a -1 (left) or a 1 (right)
+     * @param pos starting position of king
+     * @return ChessPosition (will be null if no rook, rook that has moved, or pieces in way)
+     */
+    private ChessPosition checkForRookInLineCastling(ChessBoard board, int direction, ChessPosition pos) {
+        ChessPosition testPos = pos;
+        for (int i = 0; i<4; i++) {
+            testPos = pos.offsetColBy(i*direction);
+            if (!posInBounds(testPos))
+                break;
+            ChessPiece locPiece = board.getPiece(testPos);
+            if (locPiece != null) {
+                if (locPiece.pieceColor == this.pieceColor &&
+                        locPiece.pieceType == PieceType.ROOK && !locPiece.isHasMoved()) {
+                    return testPos;
+                } else {
+                    return null;
+                }
+            }
         }
-        return pieces;
+        return null;
     }
+
+    private Set<ChessMove> generateCastlingMoves(ChessBoard board, ChessPosition myPosition) {
+        Set<ChessMove> moves = new HashSet<>();
+        //left castling
+        if (board.getPiece(myPosition).isHasMoved()) { //verify if king has moved no castling
+            return moves;
+        }
+        ChessPosition leftRook = checkForRookInLineCastling(board, -1, myPosition);
+        if (leftRook != null) {
+            ChessMove rookMove = new ChessMove(leftRook, myPosition.offsetColBy(-1));
+            moves.add(new ChessMove(myPosition, myPosition.offsetColBy(-2), null, rookMove));
+        }
+        ChessPosition rightRook = checkForRookInLineCastling(board, 1, myPosition);
+        if (leftRook != null) {
+            ChessMove rookMove = new ChessMove(rightRook, myPosition.offsetColBy(1));
+            moves.add(new ChessMove(myPosition, myPosition.offsetColBy(2), null, rookMove));
+        }
+        return moves;
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -317,22 +354,6 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-
-    public boolean checkForRookInLine(ChessBoard board, int direction, ChessPosition pos) {
-        ChessPosition testPos = pos;
-        while (posInBounds(testPos)) {
-            testPos.offsetColBy(direction);
-            ChessPiece locPiece = board.getPiece(testPos);
-            if (locPiece != null) {
-                if (locPiece.pieceColor == this.pieceColor &&
-                        locPiece.pieceType == PieceType.ROOK && !locPiece.isHasMoved()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         switch (this.pieceType) {
@@ -340,6 +361,9 @@ public class ChessPiece {
                 moves = generatePossibleHorizontalMoves(board, 1, myPosition);
                 moves.addAll(generatePossibleVerticalMoves(board, 1, myPosition));
                 moves.addAll(generatePossibleDiagonalMoves(board, 1, myPosition));
+                moves.addAll(generateCastlingMoves(board, myPosition));
+                // check for left rook
+                // check for right rook
                 break;
             case PAWN:
                 moves = generatePossiblePawnMoves(board, this.pieceColor, myPosition);
@@ -367,13 +391,21 @@ public class ChessPiece {
 
                     // Check if the new position is within the bounds of the board
                     if (posInBounds(newPosition)) {
-                        if (!(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() == pieceColor))
-                        moves.add(new ChessMove(myPosition, newPosition, null));
+                        if (!(board.getPiece(newPosition)!=null && board.getPiece(newPosition).getTeamColor() == pieceColor)) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
                     }
                 }
                 break;
         }
         //printMoves(moves);
         return moves;
+    }
+
+    /**
+     * The various different chess piece options
+     */
+    public enum PieceType {
+        KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN
     }
 }
