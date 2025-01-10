@@ -60,9 +60,16 @@ public class ChessGame {
                     boardCopy[i] = this.board.getBoard()[i].clone();
                 }
                 testBoard.setBoard(boardCopy);
-                //no castling in check, so discard move
-                if (boardInCheck(thisTeam, testBoard) && move.getCastlingRookMove() != null)
-                    continue;
+
+                if (move.getCastlingRookMove() != null) {
+                    //no castling in check, so discard move
+                    if (boardInCheck(thisTeam, testBoard))
+                        continue;
+                    //also verify the rook is safe
+                    if (ChessRulebook.canPositionBeAttacked(thisTeam, board, move.getCastlingRookMove().getEndPosition()))
+                        continue;
+                }
+
                 //ok so execute the move and see what happens
                 executeMoveNoCheck(move, testBoard);
 

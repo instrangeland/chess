@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.*;
-import chess.ChessPieceRules;
 
 /**
  * Represents a single chess piece
