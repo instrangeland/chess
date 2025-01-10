@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.*;
+import chess.ChessPieceRules;
 
 /**
  * Represents a single chess piece
@@ -311,10 +312,10 @@ public class ChessPiece {
      */
     private ChessPosition checkForRookInLineCastling(ChessBoard board, int direction, ChessPosition pos) {
         ChessPosition testPos = pos;
-        for (int i = 0; i<4; i++) {
+        for (int i = 1; i<5; i++) {
             testPos = pos.offsetColBy(i*direction);
             if (!posInBounds(testPos))
-                break;
+                return null;
             ChessPiece locPiece = board.getPiece(testPos);
             if (locPiece != null) {
                 if (locPiece.pieceColor == this.pieceColor &&
@@ -336,13 +337,18 @@ public class ChessPiece {
         }
         ChessPosition leftRook = checkForRookInLineCastling(board, -1, myPosition);
         if (leftRook != null) {
-            ChessMove rookMove = new ChessMove(leftRook, myPosition.offsetColBy(-1));
-            moves.add(new ChessMove(myPosition, myPosition.offsetColBy(-2), null, rookMove));
+            if (leftRook.getColumn() == 1) {
+                ChessMove rookMove = new ChessMove(leftRook, myPosition.offsetColBy(-1));
+                moves.add(new ChessMove(myPosition, myPosition.offsetColBy(-2), null, rookMove));
+            }
+
         }
         ChessPosition rightRook = checkForRookInLineCastling(board, 1, myPosition);
-        if (leftRook != null) {
-            ChessMove rookMove = new ChessMove(rightRook, myPosition.offsetColBy(1));
-            moves.add(new ChessMove(myPosition, myPosition.offsetColBy(2), null, rookMove));
+        if (rightRook != null) {
+            if (rightRook.getColumn() == 8) {
+                ChessMove rookMove = new ChessMove(rightRook, myPosition.offsetColBy(1));
+                moves.add(new ChessMove(myPosition, myPosition.offsetColBy(2), null, rookMove));
+            }
         }
         return moves;
     }

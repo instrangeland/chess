@@ -60,8 +60,12 @@ public class ChessGame {
                     boardCopy[i] = this.board.getBoard()[i].clone();
                 }
                 testBoard.setBoard(boardCopy);
-
+                //no castling in check, so discard move
+                if (boardInCheck(thisTeam, testBoard) && move.getCastlingRookMove() != null)
+                    continue;
+                //ok so execute the move and see what happens
                 executeMoveNoCheck(move, testBoard);
+
                 if (!boardInCheck(thisTeam, testBoard)) {
                     //System.out.println(move.toString()+" is valid");
                     validMoves.add(move);
@@ -97,8 +101,8 @@ public class ChessGame {
             //now, our validmove doesn't have the information on which piece to kill if required. So we look it up in
             //validlist to get info on en passant kill piece
             ChessMove moveWithExtraInfo = null;
+            System.out.print("Looking for move with extra move info... ");
             for (ChessMove testMove: validMoves) {
-                System.out.print("Looking for en passantable move... ");
                 if (testMove.equals(move)) {
                     System.out.println("found.");
                     moveWithExtraInfo = testMove;
@@ -115,7 +119,6 @@ public class ChessGame {
 
             if (moveWithExtraInfo.getCastlingRookMove() != null) {
                 executeMoveNoCheck(moveWithExtraInfo.getCastlingRookMove(), board);
-                executeMoveNoCheck(moveWithExtraInfo, board);
             }
 
             if (moveWithExtraInfo.isWouldCauseEnPassantable()) {
