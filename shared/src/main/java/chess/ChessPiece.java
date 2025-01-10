@@ -248,7 +248,10 @@ public class ChessPiece {
             }
         } else {
             newPosition = myPosition.offsetRowBy(direction);
-            assert posInBounds(newPosition);
+            if (!posInBounds(newPosition)) {
+                System.out.println("pawn out of bounds. We'll just break here");
+                return moves;
+            }
             if (board.getPiece(newPosition) == null) {
                 if (promoteRow == newPosition.getRow()) {
                     moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
