@@ -1,10 +1,10 @@
 package server;
 
+import com.google.gson.Gson;
+import error.HttpErrorMessage;
+import error.ResponseError;
+import error.UnauthorizedError;
 import handler.*;
-import org.eclipse.jetty.server.Authentication;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
 import spark.*;
 
 public class Server {
@@ -39,12 +39,20 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", clearHandler::handleRequest);
-
+        Spark.post("/session", loginHandler::handleRequest);
+        Spark.delete("/session", logoutHandler::handleRequest);
+        Spark.post("/user", registrationHandler::handleRequest);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
-
+        Spark.exception(ResponseError.class, this::responseExceptionHandler);
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private void responseExceptionHandler(ResponseError error, Request req, Response res) {
+        res.status(error.getCode());
+        HttpErrorMessage message = new HttpErrorMessage(error.getMessage());
+        res.body(new Gson().toJson(message));
     }
 
 
