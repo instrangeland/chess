@@ -13,7 +13,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class AuthService {
-    static AuthDAO authDAO = new AuthRam();
+    public static void setAuthDAO(AuthDAO authDAO) {
+        AuthService.authDAO = authDAO;
+    }
+
+    static private AuthDAO authDAO;
+
     static public void deleteAuths() {
         authDAO.clear();
     }

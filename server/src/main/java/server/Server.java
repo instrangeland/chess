@@ -1,10 +1,14 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.*;
 import error.HttpErrorMessage;
 import error.ResponseError;
 import error.UnauthorizedError;
 import handler.*;
+import service.AuthService;
+import service.GameService;
+import service.UserService;
 import spark.*;
 
 public class Server {
@@ -33,6 +37,15 @@ public class Server {
 //    static private final UserService userService = new UserService();
 
     public int run(int desiredPort) {
+
+        UserDAO userDAO = new UserRam();
+        GameDAO gameDAO = new GameRam();
+        AuthDAO authDAO = new AuthRam();
+
+        AuthService.setAuthDAO(authDAO);
+        GameService.setGameDAO(gameDAO);
+        UserService.setUserDAO(userDAO);
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
@@ -42,6 +55,9 @@ public class Server {
         Spark.post("/session", loginHandler::handleRequest);
         Spark.delete("/session", logoutHandler::handleRequest);
         Spark.post("/user", registrationHandler::handleRequest);
+        Spark.post("/game", newGameHandler::handleRequest);
+        Spark.put("/game", joinGameHandler::handleRequest);
+        Spark.get("/game", listGamesHandler::handleRequest);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
         Spark.exception(ResponseError.class, this::responseExceptionHandler);

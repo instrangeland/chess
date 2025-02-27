@@ -7,5 +7,5 @@ public interface UserDAO {
     public abstract UserData getUser(String username);
     public abstract UserData createUser(String username, String password, String email);
     public abstract void createUser(UserData userData);
-
+    public void clear();
 }

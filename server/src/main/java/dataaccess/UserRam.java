@@ -7,9 +7,9 @@ import org.eclipse.jetty.server.Authentication;
 import java.util.HashMap;
 
 public class UserRam implements UserDAO{
-    static HashMap<String, UserData> authDataHashMap = new HashMap<>();
+    static HashMap<String, UserData> userDataHashMap = new HashMap<>();
     public UserData getUser(String username) {
-        return authDataHashMap.get(username);
+        return userDataHashMap.get(username);
     }
 
     @Override
@@ -21,7 +21,10 @@ public class UserRam implements UserDAO{
 
     @Override
     public void createUser(UserData userData) {
-        authDataHashMap.put(userData.username(), userData);
+        userDataHashMap.put(userData.username(), userData);
     }
 
+    public void clear() {
+        userDataHashMap.clear();
+    }
 }

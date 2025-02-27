@@ -11,6 +11,6 @@ public interface GameDAO
     int createGame(String gameName);
     GameData getGame(int gameID);
     void updateGameData(int gameID, GameData gameData);
-    List<ChessGame> listGames();
+    List<GameData> listGames();
 
 }

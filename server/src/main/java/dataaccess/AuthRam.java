@@ -31,6 +31,7 @@ public class AuthRam implements AuthDAO{
 
     public void deleteAuth(String authToken) {
         authDataHashMap.put(authToken, null);
+        System.out.println("deleted an auth");
         printAuth();
     }
 }
