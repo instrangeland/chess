@@ -19,6 +19,16 @@ public class AuthService {
 
     static private AuthDAO authDAO;
 
+    static public void auth(String authToken) throws UnauthorizedError {
+        if (AuthService.authDAO.getAuth(authToken) == null) {
+            throw new UnauthorizedError();
+        }
+    }
+
+    static public String getUsername(String authToken) {
+        return authDAO.getAuth(authToken).username();
+    }
+
     static public void deleteAuths() {
         authDAO.clear();
     }
