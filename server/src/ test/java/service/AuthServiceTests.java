@@ -24,18 +24,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthServiceTests {
 
-    @BeforeAll
-
     static AuthData auth;
+
+    @BeforeAll
     public static void init() {
         UserDAO userDAO = new UserRam();
         UserService.setUserDAO(userDAO);
 
-        UserService.registerUser("abc", "xyz", "hi");
+
 
         AuthDAO dao = new AuthRam();
         AuthService.setAuthDAO(dao);
-        auth = AuthService.login(new LoginRequest("abc", "xyz"));
+
+        auth = UserService.registerUser("abc", "xyz", "hi");
+
     }
 
     @BeforeEach
