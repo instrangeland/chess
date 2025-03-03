@@ -32,6 +32,7 @@ public class AuthService {
     static public void deleteAuths() {
         authDAO.clear();
     }
+
     static public AuthData login(LoginRequest request) throws ResponseError {
         UserData user = UserService.getUser(request.username());
         if (user == null) {
