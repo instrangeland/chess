@@ -189,7 +189,10 @@ public class ChessPiece {
                 System.out.println("pawn out of bounds. We'll just break here");
                 return moves;
             }
-            moves.addAll(addMoveWithPossiblePromotion(myPosition, newPosition, promoteRow));
+            if (board.getPiece(newPosition) == null) {
+                moves.addAll(addMoveWithPossiblePromotion(myPosition, newPosition, promoteRow));
+            }
+
         }
         newPosition = myPosition.offsetPosBy(direction, -1);
         moves.addAll(addPawnCaptureMoves(board, color, myPosition, newPosition, promoteRow, direction));
