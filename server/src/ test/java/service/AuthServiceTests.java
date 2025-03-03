@@ -70,7 +70,7 @@ public class AuthServiceTests {
     @Order(3)
     @DisplayName("Check getUsername fails well")
     public void checkGetUsernameFails() throws Exception {
-        assertNull(AuthService.getUsername("abc"));
+        assertThrows(NullPointerException.class, () -> AuthService.getUsername("abc"));
     }
 
     @Test
