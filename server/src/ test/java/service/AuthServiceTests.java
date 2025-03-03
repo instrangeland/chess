@@ -106,7 +106,7 @@ public class AuthServiceTests {
 
     @Test
     @Order(6)
-    @DisplayName("Check login fails")
+    @DisplayName("Check logout fails")
     public void checkLogoutFails() throws Exception {
         assertThrows(UnauthorizedError.class, () -> AuthService.logout(new LogoutRequest(auth.authToken())));
     }
