@@ -1,10 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.GameDAO;
-import dataaccess.GameRam;
-import dataaccess.UserDAO;
-import dataaccess.UserRam;
+import dataaccess.*;
 import error.TakenError;
 import model.GameData;
 import model.UserData;
@@ -28,6 +25,9 @@ public class UserServiceTests {
     public static void init() {
         UserDAO userDAO = new UserRam();
         UserService.setUserDAO(userDAO);
+
+        AuthDAO dao = new AuthRam();
+        AuthService.setAuthDAO(dao);
 
         UserService.registerUser("abc", "123", "hi");
     }
@@ -66,7 +66,7 @@ public class UserServiceTests {
         UserService.registerUser("abc", "123", "abc");
         assertEquals(new UserData("abc", "123", "abc"), UserService.getUser("abc"));
         UserService.registerUser("def", "123", "abc");
-        assertEquals(new UserData("def", "123", "abc"), UserService.getUser("abc"));
+        assertEquals(new UserData("def", "123", "abc"), UserService.getUser("def"));
     }
 
 
