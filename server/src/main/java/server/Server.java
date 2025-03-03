@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import error.HttpErrorMessage;
 import error.ResponseError;
-import error.UnauthorizedError;
 import handler.*;
 import service.AuthService;
 import service.GameService;
@@ -24,13 +23,13 @@ public class Server {
 //    public static AuthService getAuthService() {
 //        return authService;
 //    }
-    static private final ClearHandler clearHandler = new ClearHandler();
-    static private final JoinGameHandler joinGameHandler = new JoinGameHandler();
-    static private final ListGamesHandler listGamesHandler = new ListGamesHandler();
-    static private final LoginHandler loginHandler = new LoginHandler();
-    static private final LogoutHandler logoutHandler = new LogoutHandler();
-    static private final NewGameHandler newGameHandler = new NewGameHandler();
-    static private final RegistrationHandler registrationHandler = new RegistrationHandler();
+    static private final ClearHandler CLEAR_HANDLER = new ClearHandler();
+    static private final JoinGameHandler JOIN_GAME_HANDLER = new JoinGameHandler();
+    static private final ListGamesHandler LIST_GAMES_HANDLER = new ListGamesHandler();
+    static private final LoginHandler LOGIN_HANDLER = new LoginHandler();
+    static private final LogoutHandler LOGOUT_HANDLER = new LogoutHandler();
+    static private final NewGameHandler NEW_GAME_HANDLER = new NewGameHandler();
+    static private final RegistrationHandler REGISTRATION_HANDLER = new RegistrationHandler();
 
 //    static private final AuthService authService = new AuthService();
 //    static private final GameService gameService = new GameService();
@@ -51,13 +50,13 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", clearHandler::handleRequest);
-        Spark.post("/session", loginHandler::handleRequest);
-        Spark.delete("/session", logoutHandler::handleRequest);
-        Spark.post("/user", registrationHandler::handleRequest);
-        Spark.post("/game", newGameHandler::handleRequest);
-        Spark.put("/game", joinGameHandler::handleRequest);
-        Spark.get("/game", listGamesHandler::handleRequest);
+        Spark.delete("/db", CLEAR_HANDLER::handleRequest);
+        Spark.post("/session", LOGIN_HANDLER::handleRequest);
+        Spark.delete("/session", LOGOUT_HANDLER::handleRequest);
+        Spark.post("/user", REGISTRATION_HANDLER::handleRequest);
+        Spark.post("/game", NEW_GAME_HANDLER::handleRequest);
+        Spark.put("/game", JOIN_GAME_HANDLER::handleRequest);
+        Spark.get("/game", LIST_GAMES_HANDLER::handleRequest);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
         Spark.exception(ResponseError.class, this::responseExceptionHandler);

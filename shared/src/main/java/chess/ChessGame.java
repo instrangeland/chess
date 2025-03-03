@@ -46,7 +46,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Set<ChessMove> moves;
         Set<ChessMove> validMoves = new HashSet<>();
-        if (this.board.getPiece(startPosition) == null) return null;
+        if (this.board.getPiece(startPosition) == null)  { return null; }
         moves = (Set<ChessMove>) this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         TeamColor thisTeam = this.board.getPiece(startPosition).getTeamColor();
         TeamColor otherTeam = thisTeam.oppositeColor();
@@ -64,11 +64,14 @@ public class ChessGame {
 
                 if (move.getCastlingRookMove() != null) {
                     //no castling in check, so discard move
-                    if (boardInCheck(thisTeam, testBoard))
+                    if (boardInCheck(thisTeam, testBoard)) {
                         continue;
+                    }
                     //also verify the rook is safe
-                    if (ChessRulebook.canPositionBeAttacked(thisTeam, board, move.getCastlingRookMove().getEndPosition()))
+                    if (ChessRulebook.canPositionBeAttacked(thisTeam, board,
+                            move.getCastlingRookMove().getEndPosition())) {
                         continue;
+                    }
                 }
 
                 //ok so execute the move and see what happens
@@ -98,8 +101,9 @@ public class ChessGame {
         //test if it's in the set of valid moves
         //if so, then we check our valid move list.
         ChessPiece currentPiece = board.getPiece(move.getStartPosition());
-        if (currentPiece == null)
+        if (currentPiece == null) {
             throw new InvalidMoveException();
+        }
         TeamColor pieceColor = currentPiece.getTeamColor();
         if (pieceColor != currentPlayer) {
             throw new InvalidMoveException();
@@ -167,8 +171,9 @@ public class ChessGame {
 
     public boolean boardInCheck(TeamColor teamColor, ChessBoard board) {
         ChessPosition currentTeamKing = board.findPiecePosition(teamColor, ChessPiece.PieceType.KING);
-        if (currentTeamKing == null)
+        if (currentTeamKing == null) {
             return false;
+        }
         TeamColor otherTeam = teamColor.oppositeColor();
         Set<ChessPosition> otherTeamPiecesPositions = this.board.findPiecesPositions(otherTeam);
         Set<ChessMove> otherTeamMoves = new HashSet<>();
@@ -205,8 +210,9 @@ public class ChessGame {
     }
 
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor))
+        if (!isInCheck(teamColor)) {
             return false;
+        }
         return noValidMoves(teamColor);
     }
 
@@ -243,7 +249,7 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) { return false;}
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(board, chessGame.board) && currentPlayer == chessGame.currentPlayer;
     }
