@@ -34,6 +34,7 @@ public class AuthServiceTests {
     }
 
     @Test
+    @Order(0)
     public void checkAuth() throws Exception {
         assertDoesNotThrow(() -> AuthService.auth(auth.authToken()));
     }
