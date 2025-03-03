@@ -35,21 +35,6 @@ public class ChessPiece {
         return (row < 9 && row > 0 && col < 9 && col > 0);
     }
 
-    public static void printMoves(Set<ChessMove> moves) {
-        for (ChessMove move:moves) {
-            System.out.print(move.getEndPosition().toString()+", ");
-        }
-        System.out.println();
-    }
-
-    public static Set<ChessPiece> convertPiecesFromPositions(ChessBoard board, Set<ChessPosition> positions) {
-        Set<ChessPiece> pieces = new HashSet<>();
-        for (ChessPosition position: positions) {
-            pieces.add(board.getPiece(position));
-        }
-        return pieces;
-    }
-
     public boolean isDoubleMovedForAlPassant() {
         return doubleMovedForAlPassant;
     }
@@ -201,6 +186,24 @@ public class ChessPiece {
         return moves;
     }
 
+    private Set<ChessMove> getPawnElPessantMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
+                                                 ChessPosition elPassantCheckPosition, ChessGame.TeamColor color,
+                                                 int promoteRow) {
+        Set<ChessMove> moves = new HashSet<>();
+        ChessPiece pieceToCheck = board.getPiece(elPassantCheckPosition);
+        if (pieceToCheck.pieceType == PieceType.PAWN && pieceToCheck.pieceColor != color &&
+                pieceToCheck.doubleMovedForAlPassant) {
+            if (promoteRow == newPosition.getRow()) {
+                moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN, elPassantCheckPosition));
+                moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT, elPassantCheckPosition));
+                moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK, elPassantCheckPosition));
+                moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP, elPassantCheckPosition));
+            } else {
+                moves.add(new ChessMove(myPosition, newPosition, null, elPassantCheckPosition));
+            }
+        }
+    }
+
     private Set<ChessMove> addPawnCaptureMoves(ChessBoard board, ChessGame.TeamColor color, ChessPosition myPosition,
                                                ChessPosition newPosition, int promoteRow, int direction) {
         Set<ChessMove> moves = new HashSet<>();
@@ -211,18 +214,7 @@ public class ChessPiece {
                 //check if square next to you is a pawn
                 ChessPosition elPassantCheckPosition = newPosition.offsetRowBy(-direction);
                 if (board.getPiece(elPassantCheckPosition) != null) {
-                    ChessPiece pieceToCheck = board.getPiece(elPassantCheckPosition);
-                    if (pieceToCheck.pieceType == PieceType.PAWN && pieceToCheck.pieceColor != color &&
-                            pieceToCheck.doubleMovedForAlPassant) {
-                        if (promoteRow == newPosition.getRow()) {
-                            moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN, elPassantCheckPosition));
-                            moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT, elPassantCheckPosition));
-                            moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK, elPassantCheckPosition));
-                            moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP, elPassantCheckPosition));
-                        } else {
-                            moves.add(new ChessMove(myPosition, newPosition, null, elPassantCheckPosition));
-                        }
-                    }
+
                 }
             }
         }

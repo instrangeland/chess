@@ -64,7 +64,7 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) { return false; }
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(board, that.board);
     }
@@ -72,22 +72,6 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(board);
-    }
-
-    /**
-     * Sets the board to the default starting board
-     * (How the game of chess normally starts)
-     */
-
-    public void printPieceTypes() {
-        for (ChessPiece[] chessPieces : board) {
-            for (ChessPiece chessPiece : chessPieces) {
-                if (chessPiece != null) {
-                    System.out.print(chessPiece.getPieceType().toString().charAt(0) + " ");
-                }
-            }
-            System.out.println();
-        }
     }
 
     public ChessPosition findPiecePosition(ChessGame.TeamColor color, ChessPiece.PieceType pieceType) {
@@ -117,16 +101,6 @@ public class ChessBoard {
         return positions;
     }
 
-    public void printPieceColors() {
-        for (ChessPiece[] chessPieces : board) {
-            for (ChessPiece chessPiece : chessPieces) {
-                if (chessPiece != null) {
-                    System.out.print(chessPiece.getTeamColor().toString().charAt(0) + " ");
-                }
-            }
-            System.out.println();
-        }
-    }
 
     public void resetBoard() {
         addPiece(new ChessPosition(1, 1), new ChessPiece(TeamColor.WHITE, PieceType.ROOK));

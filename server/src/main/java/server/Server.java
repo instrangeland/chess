@@ -12,17 +12,6 @@ import spark.*;
 
 public class Server {
 
-//    public static GameService getGameService() {
-//        return gameService;
-//    }
-//
-//    public static UserService getUserService() {
-//        return userService;
-//    }
-//
-//    public static AuthService getAuthService() {
-//        return authService;
-//    }
     static private final ClearHandler CLEAR_HANDLER = new ClearHandler();
     static private final JoinGameHandler JOIN_GAME_HANDLER = new JoinGameHandler();
     static private final ListGamesHandler LIST_GAMES_HANDLER = new ListGamesHandler();
@@ -31,9 +20,6 @@ public class Server {
     static private final NewGameHandler NEW_GAME_HANDLER = new NewGameHandler();
     static private final RegistrationHandler REGISTRATION_HANDLER = new RegistrationHandler();
 
-//    static private final AuthService authService = new AuthService();
-//    static private final GameService gameService = new GameService();
-//    static private final UserService userService = new UserService();
 
     public int run(int desiredPort) {
 
