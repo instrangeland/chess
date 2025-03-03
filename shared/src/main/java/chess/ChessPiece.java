@@ -105,11 +105,11 @@ public class ChessPiece {
      */
 
     private Set<ChessMove> generateMovesInDirection(ChessBoard board, int maxLen, ChessPosition myPosition,
-                                                    int x_direction, int y_direction) {
+                                                    int xDirection, int yDirection) {
         Set<ChessMove> moves = new HashSet<>();
         for (int i = 1; i <= maxLen; i++) {
-            ChessPosition newPosition = new ChessPosition(myPosition.getRow() + x_direction * i,
-                    myPosition.getColumn() + y_direction * i);
+            ChessPosition newPosition = new ChessPosition(myPosition.getRow() + xDirection * i,
+                    myPosition.getColumn() + yDirection * i);
             if (posInBounds(newPosition)) {
                 if (board.getPiece(newPosition) != null && board.getPiece(newPosition).pieceColor == pieceColor) {
                     break;
@@ -146,6 +146,20 @@ public class ChessPiece {
         return moves;
     }
 
+    private Set<ChessMove> addMoveWithPossiblePromotion(ChessPosition myPosition, ChessPosition newPosition,
+                                                        int promoteRow) {
+        Set<ChessMove> moves = new HashSet<>();
+        if (promoteRow == newPosition.getRow()) {
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
+            moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
+        } else {
+            moves.add(new ChessMove(myPosition, newPosition, null));
+        }
+        return moves;
+    }
+
     private Set<ChessMove> generatePossiblePawnMoves(ChessBoard board, ChessGame.TeamColor color, ChessPosition myPosition) {
         Set<ChessMove> moves = new HashSet<>();
         int startingRow, direction, promoteRow;
@@ -175,16 +189,7 @@ public class ChessPiece {
                 System.out.println("pawn out of bounds. We'll just break here");
                 return moves;
             }
-            if (board.getPiece(newPosition) == null) {
-                if (promoteRow == newPosition.getRow()) {
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
-                } else {
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                }
-            }
+            moves.addAll(addMoveWithPossiblePromotion(myPosition, newPosition, promoteRow));
         }
         newPosition = myPosition.offsetPosBy(direction, -1);
         moves.addAll(addPawnCaptureMoves(board, color, myPosition, newPosition, promoteRow, direction));
@@ -198,14 +203,7 @@ public class ChessPiece {
         Set<ChessMove> moves = new HashSet<>();
         if (posInBounds(newPosition)) {
             if (board.getPiece(newPosition) != null && board.getPiece(newPosition).pieceColor != pieceColor) {
-                if (promoteRow == newPosition.getRow()) {
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.QUEEN));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.KNIGHT));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.ROOK));
-                    moves.add(new ChessMove(myPosition, newPosition, PieceType.BISHOP));
-                } else {
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                }
+                moves.addAll(addMoveWithPossiblePromotion(myPosition, newPosition, promoteRow));
             } else if (board.getPiece(newPosition) == null) {
                 //check if square next to you is a pawn
                 ChessPosition elPassantCheckPosition = newPosition.offsetRowBy(-direction);
