@@ -1,27 +1,31 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.GameDAO;
+import dataaccess.GameRam;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
+import response.ListGamesResponse;
 import server.Server;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameServiceTests {
     private static int newGameNum;
+    private static int secondGameNum;
     @BeforeAll
     public static void init() {
+        GameDAO dao = new GameRam();
+        GameService.setGameDAO(dao);
         GameService.deleteGames();
         newGameNum = service.GameService.newGame("abc").gameID();
+        secondGameNum = service.GameService.newGame("def").gameID();
 
     }
 
@@ -52,6 +56,43 @@ public class GameServiceTests {
         gameData = service.GameService.getGame(newGameNum);
         assertEquals(gameData, newGameData);
     }
+
+    @Test
+    @Order(3)
+    @DisplayName("Check listgame")
+    public void listGameCheck() throws Exception {
+        GameData gameData = service.GameService.getGame(newGameNum);
+        GameData newGameData = new GameData(1234, "abc", "def", "hello",
+                new ChessGame());
+        service.GameService.updateGame(newGameNum, newGameData);
+
+        gameData = service.GameService.getGame(newGameNum);
+        assertEquals(gameData, newGameData);
+        GameData secondGame = GameService.getGame(secondGameNum);
+
+        List<GameData> gameDataList = new ArrayList<>();
+        gameDataList.add(newGameData);
+        gameDataList.add(secondGame);
+
+
+        ListGamesResponse gamesResponse = new ListGamesResponse(gameDataList);
+        assertEquals(gamesResponse, GameService.listGames());
+    }
+
+
+    @Test
+    @Order(4)
+    @DisplayName("Check joinGame")
+    public void joinGameCheck() throws Exception {
+        GameService.joinGame("abc", "BLACK", secondGameNum);
+        GameData game = GameService.getGame(secondGameNum);
+
+        assertEquals(game, new GameData(secondGameNum, null, "abc", "def",
+                new ChessGame()));
+    }
+
+
+
 
 
 

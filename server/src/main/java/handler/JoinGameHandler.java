@@ -31,31 +31,7 @@ public class JoinGameHandler extends Handler{
         if (!joinGameRequest.playerColor().equals("BLACK") && !joinGameRequest.playerColor().equals("WHITE")) {
             throw new BadRequestError();
         }
-        try {
-            GameData data = GameService.getGame(joinGameRequest.gameID());
-            if (data == null) {
-                throw new BadRequestError();
-            }
-            GameData newData;
-            if (joinGameRequest.playerColor().equals("BLACK")) {
-                if (data.blackUsername() == null) {
-                    newData = new GameData(data.gameID(), data.whiteUsername(), username, data.gameName(), data.game());
-                } else {
-                    throw new TakenError();
-                }
-            } else {
-                if (data.whiteUsername() == null) {
-                    newData = new GameData(data.gameID(), username, data.blackUsername(), data.gameName(), data.game());
-                } else {
-                    throw new TakenError();
-                }
-            }
-            GameService.updateGame(joinGameRequest.gameID(), newData);
-        } catch (IndexOutOfBoundsException e) {
-            throw new BadRequestError();
-        }
-
-
+        GameService.joinGame(username, joinGameRequest.playerColor(), joinGameRequest.gameID());
         return "{}";
     }
 }

@@ -3,7 +3,10 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.GameRam;
+import error.BadRequestError;
+import error.TakenError;
 import model.GameData;
+import request.JoinGameRequest;
 import response.ListGamesResponse;
 import response.NewGameResponse;
 
@@ -29,6 +32,32 @@ public class GameService {
 
     static public ListGamesResponse listGames() {
         return new ListGamesResponse(gameDAO.listGames());
+    }
+
+    static public void joinGame(String username, String teamColor, int gameNum) {
+        try {
+            GameData data = GameService.getGame(gameNum);
+            if (data == null) {
+                throw new BadRequestError();
+            }
+            GameData newData;
+            if (teamColor.equals("BLACK")) {
+                if (data.blackUsername() == null) {
+                    newData = new GameData(data.gameID(), data.whiteUsername(), username, data.gameName(), data.game());
+                } else {
+                    throw new TakenError();
+                }
+            } else {
+                if (data.whiteUsername() == null) {
+                    newData = new GameData(data.gameID(), username, data.blackUsername(), data.gameName(), data.game());
+                } else {
+                    throw new TakenError();
+                }
+            }
+            GameService.updateGame(gameNum, newData);
+        } catch (IndexOutOfBoundsException e) {
+            throw new BadRequestError();
+        }
     }
 
     static public NewGameResponse newGame(String gameName) {
