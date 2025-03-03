@@ -1,23 +1,11 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.*;
-import error.TakenError;
 import error.UnauthorizedError;
 import model.AuthData;
-import model.GameData;
-import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import passoff.server.TestServerFacade;
 import request.LoginRequest;
 import request.LogoutRequest;
-import response.ListGamesResponse;
-import server.Server;
-
-import java.net.HttpURLConnection;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,7 +23,7 @@ public class AuthServiceTests {
 
         AuthDAO dao = new AuthRam();
         AuthService.setAuthDAO(dao);
-
+        UserService.deleteUsers();
         auth = UserService.registerUser("abc", "xyz", "hi");
 
     }
@@ -46,10 +34,8 @@ public class AuthServiceTests {
     }
 
     @Test
-    @Order(0)
-    @DisplayName("Check auth works")
     public void checkAuth() throws Exception {
-        AuthService.auth(auth.authToken());
+        assertDoesNotThrow(() -> AuthService.auth(auth.authToken()));
     }
 
     @Test
@@ -80,6 +66,7 @@ public class AuthServiceTests {
         AuthService.deleteAuths();
         assertThrows(UnauthorizedError.class, () -> AuthService.auth(auth.authToken()));
     }
+
 
     @Test
     @Order(5)
