@@ -202,6 +202,7 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, newPosition, null, elPassantCheckPosition));
             }
         }
+        return moves;
     }
 
     private Set<ChessMove> addPawnCaptureMoves(ChessBoard board, ChessGame.TeamColor color, ChessPosition myPosition,
@@ -214,7 +215,8 @@ public class ChessPiece {
                 //check if square next to you is a pawn
                 ChessPosition elPassantCheckPosition = newPosition.offsetRowBy(-direction);
                 if (board.getPiece(elPassantCheckPosition) != null) {
-
+                    moves.addAll(getPawnElPessantMoves(board, myPosition, newPosition, elPassantCheckPosition, color,
+                            promoteRow));
                 }
             }
         }
