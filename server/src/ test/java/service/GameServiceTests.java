@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.GameDAO;
 import dataaccess.GameRam;
+import error.TakenError;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
@@ -35,6 +36,13 @@ public class GameServiceTests {
     }
 
     @Test
+    @Order(0)
+    @DisplayName("Check getGame fail")
+    public void getGameFail() throws Exception {
+        assertThrows(IndexOutOfBoundsException.class, () -> service.GameService.getGame(999));
+    }
+
+    @Test
     @Order(1)
     @DisplayName("Check getGame")
     public void getGameCheck() throws Exception {
@@ -59,6 +67,15 @@ public class GameServiceTests {
 
     @Test
     @Order(3)
+    @DisplayName("Check updateGame and getGame")
+    public void setGameFailure() throws Exception {
+        assertThrows(IndexOutOfBoundsException.class, () -> service.GameService.updateGame(4,
+                new GameData(1234, "abc", "def", "hello", new ChessGame())));
+
+    }
+
+    @Test
+    @Order(4)
     @DisplayName("Check listgame")
     public void listGameCheck() throws Exception {
         GameData gameData = service.GameService.getGame(newGameNum);
@@ -81,7 +98,7 @@ public class GameServiceTests {
 
 
     @Test
-    @Order(4)
+    @Order(5)
     @DisplayName("Check joinGame")
     public void joinGameCheck() throws Exception {
         GameService.joinGame("abc", "BLACK", secondGameNum);
@@ -90,6 +107,15 @@ public class GameServiceTests {
         assertEquals(game, new GameData(secondGameNum, null, "abc", "def",
                 new ChessGame()));
     }
+
+    @Test
+    @Order(6)
+    @DisplayName("Check joinGame")
+    public void usernameTakenCheck() throws Exception {
+        assertThrows(TakenError.class, () -> GameService.joinGame("abc", "BLACK", secondGameNum));
+    }
+
+
 
 
 
