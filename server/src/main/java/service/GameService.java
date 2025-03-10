@@ -1,12 +1,9 @@
 package service;
 
-import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import dataaccess.GameRam;
 import error.BadRequestError;
 import error.TakenError;
 import model.GameData;
-import request.JoinGameRequest;
 import response.ListGamesResponse;
 import response.NewGameResponse;
 

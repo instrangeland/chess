@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AuthDAO;
-import dataaccess.AuthRam;
 import dataaccess.DataAccessException;
 import error.ResponseError;
 import error.UnauthorizedError;
@@ -12,7 +11,6 @@ import request.LogoutRequest;
 
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.UUID;
 
 public class AuthService {
     public static void setAuthDAO(AuthDAO authDAO) {

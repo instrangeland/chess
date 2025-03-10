@@ -2,16 +2,13 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.GameDAO;
-import dataaccess.GameRam;
+import dataaccess.RAM.GameRam;
 import error.TakenError;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
 import passoff.server.TestServerFacade;
 import response.ListGamesResponse;
-import server.Server;
 
-import java.net.HttpURLConnection;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

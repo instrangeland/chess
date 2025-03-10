@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.RAM.AuthRam;
+import dataaccess.RAM.UserRam;
 import error.UnauthorizedError;
 import model.AuthData;
 import org.junit.jupiter.api.*;

@@ -1,10 +1,11 @@
-package dataaccess;
+package dataaccess.RAM;
 
+import dataaccess.AuthDAO;
 import model.AuthData;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class AuthRam implements AuthDAO{
+public class AuthRam implements AuthDAO {
     static HashMap<String, AuthData> authDataHashMap = new HashMap<>();
     public void clear() {
         authDataHashMap.clear();

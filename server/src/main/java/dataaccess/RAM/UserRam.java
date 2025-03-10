@@ -1,12 +1,11 @@
-package dataaccess;
+package dataaccess.RAM;
 
-import model.AuthData;
+import dataaccess.UserDAO;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
 import java.util.HashMap;
 
-public class UserRam implements UserDAO{
+public class UserRam implements UserDAO {
     static HashMap<String, UserData> userDataHashMap = new HashMap<>();
     public UserData getUser(String username) {
         return userDataHashMap.get(username);

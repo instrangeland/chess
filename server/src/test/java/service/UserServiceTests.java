@@ -1,19 +1,12 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.RAM.AuthRam;
+import dataaccess.RAM.UserRam;
 import error.TakenError;
-import model.GameData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
 import passoff.server.TestServerFacade;
-import response.ListGamesResponse;
-import server.Server;
-
-import java.net.HttpURLConnection;
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

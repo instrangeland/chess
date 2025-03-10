@@ -2,6 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import dataaccess.SQL.AuthSQL;
+import dataaccess.SQL.GameSQL;
+import dataaccess.SQL.UserSQL;
 import error.HttpErrorMessage;
 import error.ResponseError;
 import handler.*;
@@ -23,9 +26,9 @@ public class Server {
 
     public int run(int desiredPort) {
 
-        UserDAO userDAO = new UserRam();
-        GameDAO gameDAO = new GameRam();
-        AuthDAO authDAO = new AuthRam();
+        UserDAO userDAO = new UserSQL();
+        GameDAO gameDAO = new GameSQL();
+        AuthDAO authDAO = new AuthSQL();
 
         AuthService.setAuthDAO(authDAO);
         GameService.setGameDAO(gameDAO);

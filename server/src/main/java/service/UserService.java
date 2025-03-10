@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.UserRam;
 import error.TakenError;
 import model.AuthData;
 import model.UserData;

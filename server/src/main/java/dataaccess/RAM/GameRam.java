@@ -1,13 +1,13 @@
-package dataaccess;
+package dataaccess.RAM;
 
 import chess.ChessGame;
+import dataaccess.GameDAO;
 import model.GameData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class GameRam implements GameDAO{
+public class GameRam implements GameDAO {
     static List<GameData> gameDataArrayList = new ArrayList<>();
     static int nextGameNum = 0;
     @Override
