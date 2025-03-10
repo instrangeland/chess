@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.AuthRam;
+import dataaccess.DataAccessException;
 import error.ResponseError;
 import error.UnauthorizedError;
 import model.AuthData;
@@ -9,6 +10,7 @@ import model.UserData;
 import request.LoginRequest;
 import request.LogoutRequest;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,7 +50,11 @@ public class AuthService {
         if (auth == null) {
             throw new UnauthorizedError();
         }
-        authDAO.deleteAuth(request.authToken());
+        try {
+            authDAO.deleteAuth(request.authToken());
+        } catch (DataAccessException | SQLException e) {
+            throw new ResponseError(e.getMessage(), 500);
+        }
     }
 
 
