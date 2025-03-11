@@ -8,26 +8,34 @@ import error.ResponseError;
 import model.AuthData;
 
 import java.sql.*;
+import java.util.UUID;
 
 public class AuthSQL implements AuthDAO {
-
+    private final Connection connection;
     public AuthSQL() {
         DataAccess.configure();
         try {
-            var conn = DatabaseManager.getConnection();
+            connection = DatabaseManager.getConnection();
         } catch (DataAccessException e) {
             throw new ResponseError(e.getMessage(), 500);
         }
     }
 
     public void clear() {
-        // TODO: Implement this method
-        throw new UnsupportedOperationException("Not implemented yet");
+        DataAccess.runSimpleCommand("TRUNCATE TABLE auth_table");
     }
 
     public AuthData createAuth(String username) {
         // TODO: Implement this method
-        throw new UnsupportedOperationException("Not implemented yet");
+        String authToken = UUID.randomUUID().toString();
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO auth_table (TOKEN, KEY) VALUES (?,?)")) {
+            statement.setString(1, authToken);
+        } catch (SQLException e) {
+            throw new ResponseError(e.getMessage(), 500);
+        }
+
+
+        return new AuthData(authToken, username);
     }
 
     public void printAuth() {
@@ -41,11 +49,6 @@ public class AuthSQL implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException, SQLException {
-        var statement = "DELETE FROM auth_table WHERE TOKEN=?";
-        try (var conn = DatabaseManager.getConnection()) {
-            conn.prepareStatement(statement);
-        } catch (SQLException e) {
-            throw new ResponseError(e.getMessage(), 500);
-        }
+        DataAccess.runSimpleCommand("DELETE FROM auth_table WHERE TOKEN=?");
     }
 }
