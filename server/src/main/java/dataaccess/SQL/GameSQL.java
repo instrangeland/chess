@@ -81,6 +81,9 @@ public class GameSQL implements GameDAO {
 
     @Override
     public void updateGameData(int gameID, GameData gameData) {
+        if (gameID >= nextGameNum || gameID < 1) {
+            throw new IndexOutOfBoundsException();
+        }
         try (PreparedStatement statement =
                      connection.prepareStatement(
                              "UPDATE game_table SET WHITE_USERNAME=?, BLACK_USERNAME=?," +

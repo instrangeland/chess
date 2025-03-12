@@ -57,7 +57,9 @@ public class GameDAOTests {
     @Order(2)
     @DisplayName("Check getGame")
     public void checkGetGame() throws Exception {
-        GameData data = gameDAO.getGame(1);
+        int gameNum = gameDAO.createGame("abc");
+        System.out.println(gameNum);
+        GameData data = gameDAO.getGame(gameNum);
         assertEquals("abc", data.gameName());
     }
 
@@ -88,15 +90,17 @@ public class GameDAOTests {
     @Order(6)
     @DisplayName("Check listGames")
     public void checkListGames() throws Exception {
-        GameData gameData = service.GameService.getGame(1);
+        GameData gameData = gameDAO.getGame(1);
         gameDAO.createGame("abc");
         GameData newGameData = new GameData(2, "abc", "def", "hello",
                 new ChessGame());
-        service.GameService.updateGame(2, newGameData);
+        gameDAO.updateGameData(2, newGameData);
+        GameData thirdGame = gameDAO.getGame(3);
 
         List<GameData> gameDataList = new ArrayList<>();
+        gameDataList.add(gameData);
         gameDataList.add(newGameData);
-        gameDataList.add(newGameData);
+        gameDataList.add(thirdGame);
         assertEquals(gameDataList, gameDAO.listGames());
     }
 
@@ -105,7 +109,7 @@ public class GameDAOTests {
     @DisplayName("Check listGames fails")
     public void checkListGamesFails() throws Exception {
         gameDAO.clear();
-        assertNull(gameDAO.listGames());
+        assertEquals(new ArrayList<>(), gameDAO.listGames());
     }
 
 
