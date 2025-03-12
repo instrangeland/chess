@@ -1,8 +1,6 @@
 package dataaccess;
 
 import dataaccess.*;
-import dataaccess.RAM.AuthRam;
-import dataaccess.RAM.UserRam;
 import dataaccess.SQL.AuthSQL;
 import error.ResponseError;
 import error.UnauthorizedError;

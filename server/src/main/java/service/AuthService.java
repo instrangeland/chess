@@ -6,6 +6,7 @@ import error.ResponseError;
 import error.UnauthorizedError;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.LogoutRequest;
 
@@ -35,9 +36,10 @@ public class AuthService {
 
     static public AuthData login(LoginRequest request) throws ResponseError {
         UserData user = UserService.getUser(request.username());
+
         if (user == null) {
             throw new UnauthorizedError();
-        } else if (!Objects.equals(request.password(), user.password())) {
+        } else if (!BCrypt.checkpw(request.password(), user.password())) {
             throw new UnauthorizedError();
         }
         return authDAO.createAuth(user.username());

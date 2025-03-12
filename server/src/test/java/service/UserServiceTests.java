@@ -1,12 +1,12 @@
 package service;
 
 import dataaccess.*;
-import dataaccess.RAM.AuthRam;
-import dataaccess.RAM.UserRam;
+import dataaccess.SQL.AuthSQL;
+import dataaccess.SQL.UserSQL;
 import error.TakenError;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import passoff.server.TestServerFacade;
+import org.mindrot.jbcrypt.BCrypt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,10 +16,10 @@ public class UserServiceTests {
 
     @BeforeAll
     public static void init() {
-        UserDAO userDAO = new UserRam();
+        UserDAO userDAO = new UserSQL();
         UserService.setUserDAO(userDAO);
 
-        AuthDAO dao = new AuthRam();
+        AuthDAO dao = new AuthSQL();
         AuthService.setAuthDAO(dao);
 
         UserService.registerUser("abc", "123", "hi");
@@ -34,7 +34,10 @@ public class UserServiceTests {
     @Order(0)
     @DisplayName("Check get user")
     public void checkGetUser() throws Exception {
-        assertEquals(new UserData("abc", "123", "hi"), UserService.getUser("abc"));
+        UserData data = new UserData("abc", "123", "hi");
+        UserData retrievedUser = UserService.getUser("abc");
+        assertEquals(data.email(), retrievedUser.email());
+        assertTrue(BCrypt.checkpw(data.password(), retrievedUser.password()));
     }
 
     @Test
@@ -56,10 +59,11 @@ public class UserServiceTests {
     @Order(3)
     @DisplayName("Check register users")
     public void checkRegisterUser() throws Exception {
-        UserService.registerUser("abc", "123", "abc");
-        assertEquals(new UserData("abc", "123", "abc"), UserService.getUser("abc"));
-        UserService.registerUser("def", "123", "abc");
-        assertEquals(new UserData("def", "123", "abc"), UserService.getUser("def"));
+        UserData data = new UserData("abc", "123", "hi");
+        UserService.registerUser("abc", "123", "hi");
+        UserData retrievedUser = UserService.getUser("abc");
+        assertEquals(data.email(), retrievedUser.email());
+        assertTrue(BCrypt.checkpw(data.password(), retrievedUser.password()));
     }
 
 

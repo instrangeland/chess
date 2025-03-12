@@ -26,7 +26,6 @@ public class UserService {
             System.out.println("taken");
             throw new TakenError();
         }
-
         userDAO.createUser(username, password, email);
         return AuthService.login(new LoginRequest(username, password));
     }

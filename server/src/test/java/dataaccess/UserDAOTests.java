@@ -1,8 +1,6 @@
 package dataaccess;
 
 import dataaccess.*;
-import dataaccess.RAM.AuthRam;
-import dataaccess.RAM.UserRam;
 import dataaccess.SQL.AuthSQL;
 import dataaccess.SQL.UserSQL;
 import error.ResponseError;
@@ -34,7 +32,6 @@ public class UserDAOTests {
     @AfterAll
     public static void clean() {
         userDAO.clear();
-
     }
 
 
@@ -52,10 +49,7 @@ public class UserDAOTests {
     @Order(0)
     @DisplayName("Check createUser breaks")
     public void checkCreateUserBreaks() throws Exception {
-        UserData data = userDAO.createUser("abc", "123", "555");
-        UserData returnedData = userDAO.getUser(data.username());
-        assertEquals(returnedData.email(), data.email());
-        assertTrue(BCrypt.checkpw("123", returnedData.password()));
+        assertThrows(ResponseError.class, () -> userDAO.createUser(null, null, null));
     }
 
 

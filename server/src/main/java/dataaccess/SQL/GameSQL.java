@@ -43,6 +43,7 @@ public class GameSQL implements GameDAO {
             statement.setString(4, gameName);
             ChessGame game = new ChessGame();
             String chessPickled = new Gson().toJson(game);
+            statement.setString(5, chessPickled);
             statement.executeUpdate();
             nextGameNum++;
             return nextGameNum - 1;

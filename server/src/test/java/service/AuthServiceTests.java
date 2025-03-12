@@ -1,8 +1,9 @@
 package service;
 
 import dataaccess.*;
-import dataaccess.RAM.AuthRam;
-import dataaccess.RAM.UserRam;
+
+import dataaccess.SQL.AuthSQL;
+import dataaccess.SQL.UserSQL;
 import error.UnauthorizedError;
 import model.AuthData;
 import org.junit.jupiter.api.*;
@@ -18,12 +19,12 @@ public class AuthServiceTests {
 
     @BeforeAll
     public static void init() {
-        UserDAO userDAO = new UserRam();
+        UserDAO userDAO = new UserSQL();
         UserService.setUserDAO(userDAO);
 
 
 
-        AuthDAO dao = new AuthRam();
+        AuthDAO dao = new AuthSQL();
         AuthService.setAuthDAO(dao);
         UserService.deleteUsers();
         auth = UserService.registerUser("abc", "xyz", "hi");

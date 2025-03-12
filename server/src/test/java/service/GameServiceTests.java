@@ -2,7 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.GameDAO;
-import dataaccess.RAM.GameRam;
+import dataaccess.SQL.GameSQL;
 import error.TakenError;
 import model.GameData;
 import org.junit.jupiter.api.*;
@@ -19,7 +19,7 @@ public class GameServiceTests {
     private static int secondGameNum;
     @BeforeAll
     public static void init() {
-        GameDAO dao = new GameRam();
+        GameDAO dao = new GameSQL();
         GameService.setGameDAO(dao);
         GameService.deleteGames();
         newGameNum = service.GameService.newGame("abc").gameID();

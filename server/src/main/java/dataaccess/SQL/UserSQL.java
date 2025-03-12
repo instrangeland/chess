@@ -27,7 +27,7 @@ public class UserSQL implements UserDAO {
     }
     public UserData getUser(String username) {
         try (PreparedStatement statement =
-                     connection.prepareStatement("SELECT PASSWORD_HASH, EMAIL FROM user_table WHERE TOKEN=?")) {
+                     connection.prepareStatement("SELECT PASSWORD_HASH, EMAIL FROM user_table WHERE USERNAME=?")) {
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
                 String email;
