@@ -107,21 +107,19 @@ public class GameSQL implements GameDAO {
                 int gameNumber;
                 ChessGame game;
                 List<GameData> gameData = new ArrayList<>();
-                if (resultSet.next()) {
+                while (resultSet.next()) {
                     whiteUsername = resultSet.getString("WHITE_USERNAME");
                     blackUsername = resultSet.getString("BLACK_USERNAME");
                     gameName = resultSet.getString("GAME_NAME");
                     gameNumber = resultSet.getInt("ID");
                     game = new Gson().fromJson(resultSet.getString("JSON"), ChessGame.class);
                     gameData.add(new GameData(gameNumber, whiteUsername, blackUsername, gameName, game));
-                } else {
-                    return gameData;
                 }
+                return gameData;
             }
         } catch (SQLException e) {
             throw new ResponseError(e.getMessage(), 500);
         }
-        return new ArrayList<>();
     }
 
     public void clear() {

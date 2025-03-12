@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.GameDAO;
 import dataaccess.SQL.GameSQL;
+import error.ResponseError;
 import error.TakenError;
 import model.GameData;
 import org.junit.jupiter.api.*;
@@ -54,7 +55,7 @@ public class GameServiceTests {
     @DisplayName("Check updateGame and getGame")
     public void setGameCheck() throws Exception {
         GameData gameData = service.GameService.getGame(newGameNum);
-        GameData newGameData = new GameData(1234, "abc", "def", "hello",
+        GameData newGameData = new GameData(2, "abc", "def", "hello",
                 new ChessGame());
         service.GameService.updateGame(newGameNum, newGameData);
 
@@ -76,7 +77,7 @@ public class GameServiceTests {
     @DisplayName("Check listgame")
     public void listGameCheck() throws Exception {
         GameData gameData = service.GameService.getGame(newGameNum);
-        GameData newGameData = new GameData(1234, "abc", "def", "hello",
+        GameData newGameData = new GameData(2, "abc", "def", "hello",
                 new ChessGame());
         service.GameService.updateGame(newGameNum, newGameData);
 
