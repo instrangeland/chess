@@ -11,6 +11,8 @@ public class AuthRam implements AuthDAO {
         authDataHashMap.clear();
     }
 
+
+
     public AuthData createAuth(String username) {
         String authToken = UUID.randomUUID().toString();
         AuthData data = new AuthData(authToken, username);

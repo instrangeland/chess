@@ -23,6 +23,13 @@ public class AuthDAOTests {
     @BeforeAll
     public static void init() {
         authDAO = new AuthSQL();
+        authDAO.clear();
+
+    }
+
+    @AfterAll
+    public static void clean() {
+        authDAO.clear();
 
     }
 
