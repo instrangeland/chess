@@ -12,9 +12,12 @@ import org.junit.jupiter.api.*;
 import request.LoginRequest;
 import request.LogoutRequest;
 import service.AuthService;
+import service.GameService;
 import service.UserService;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -81,7 +84,29 @@ public class GameDAOTests {
                 new GameData(1, null,null, "abc", new ChessGame())));
     }
 
+    @Test
+    @Order(6)
+    @DisplayName("Check listGames")
+    public void checkListGames() throws Exception {
+        GameData gameData = service.GameService.getGame(1);
+        gameDAO.createGame("abc");
+        GameData newGameData = new GameData(2, "abc", "def", "hello",
+                new ChessGame());
+        service.GameService.updateGame(2, newGameData);
 
+        List<GameData> gameDataList = new ArrayList<>();
+        gameDataList.add(newGameData);
+        gameDataList.add(newGameData);
+        assertEquals(gameDataList, gameDAO.listGames());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Check listGames fails")
+    public void checkListGamesFails() throws Exception {
+        gameDAO.clear();
+        assertNull(gameDAO.listGames());
+    }
 
 
 
