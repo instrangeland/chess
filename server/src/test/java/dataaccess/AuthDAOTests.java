@@ -4,6 +4,7 @@ import dataaccess.*;
 import dataaccess.RAM.AuthRam;
 import dataaccess.RAM.UserRam;
 import dataaccess.SQL.AuthSQL;
+import error.ResponseError;
 import error.UnauthorizedError;
 import model.AuthData;
 import org.junit.jupiter.api.*;
@@ -39,7 +40,7 @@ public class AuthDAOTests {
     @DisplayName("Check passing null fails")
     public void checkCreateAuthFails() throws Exception {
 
-        assertThrows(SQLException.class, () -> authDAO.createAuth(null));
+        assertThrows(ResponseError.class, () -> authDAO.createAuth(null));
     }
 
     @Test
@@ -74,14 +75,14 @@ public class AuthDAOTests {
     @Order(5)
     @DisplayName("Check deleteFromAuth fails right")
     public void checkDeleteAuthFails() throws Exception {
-        assertThrows(SQLException.class, () -> authDAO.deleteAuth(null));
+        assertThrows(ResponseError.class, () -> authDAO.deleteAuth(null));
     }
 
     @Test
     @Order(5)
     @DisplayName("Check clear fails right")
     public void checkClear() throws Exception {
-        assertThrows(SQLException.class, () -> authDAO.deleteAuth(null));
+        assertThrows(ResponseError.class, () -> authDAO.deleteAuth(null));
     }
 
     @Test

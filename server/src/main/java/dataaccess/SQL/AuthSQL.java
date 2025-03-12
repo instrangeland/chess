@@ -31,11 +31,12 @@ public class AuthSQL implements AuthDAO {
         try (PreparedStatement statement =
                      connection.prepareStatement("INSERT INTO auth_table (TOKEN, USERNAME) VALUES (?,?)")) {
             statement.setString(1, authToken);
+            statement.setString(2, username);
             statement.executeUpdate();
+            return new AuthData(authToken, username);
         } catch (SQLException e) {
             throw new ResponseError(e.getMessage(), 500);
         }
-        return new AuthData(authToken, username);
     }
 
 
@@ -58,13 +59,13 @@ public class AuthSQL implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException, SQLException {
-
+        if (authToken == null)
+            throw new ResponseError("Cannot pass deleteAuth null", 500);
         try (PreparedStatement statement = connection.prepareStatement("DELETE FROM auth_table WHERE TOKEN=?")) {
             statement.setString(1, authToken);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new ResponseError(e.getMessage(), 500);
         }
-        DataAccess.runSimpleCommand("");
     }
 }
