@@ -1,4 +1,4 @@
-paciDkage dataaccess;
+package dataaccess;
 
 import error.ResponseError;
 
