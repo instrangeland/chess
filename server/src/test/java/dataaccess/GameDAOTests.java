@@ -112,6 +112,24 @@ public class GameDAOTests {
         assertEquals(new ArrayList<>(), gameDAO.listGames());
     }
 
+    @Test
+    @Order(8)
+    @DisplayName("Check clear")
+    public void checkClear() throws Exception {
+        gameDAO.createGame("abc");
+        gameDAO.createGame("abc");
+        gameDAO.createGame("abc");
+        gameDAO.clear();
+        assertEquals(new ArrayList<>(), gameDAO.listGames());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Check clear doesn't blow up when empty")
+    public void checkClearFails() throws Exception {
+        assertDoesNotThrow(gameDAO::clear);
+    }
+
 
 
 
