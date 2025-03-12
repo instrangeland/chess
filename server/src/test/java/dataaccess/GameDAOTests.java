@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.SQL.AuthSQL;
 import dataaccess.SQL.GameSQL;
@@ -43,12 +44,47 @@ public class GameDAOTests {
     }
 
     @Test
-    @Order(0)
+    @Order(1)
     @DisplayName("Check createGame fails")
     public void checkCreateGameFails() throws Exception {
         assertThrows(ResponseError.class, () -> gameDAO.createGame(null));
-
     }
+
+    @Test
+    @Order(2)
+    @DisplayName("Check getGame")
+    public void checkGetGame() throws Exception {
+        GameData data = gameDAO.getGame(1);
+        assertEquals("abc", data.gameName());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Check getGame fails")
+    public void checkGetGameFails() throws Exception {
+        assertNull(gameDAO.getGame(10));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Check updateGameData")
+    public void checkUpdateGameData() throws Exception {
+        assertDoesNotThrow(() -> gameDAO.updateGameData(1, new GameData(1, null,
+                null, "abc", new ChessGame())));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Check updateGameData fails")
+    public void checkUpdateGameDataFails() throws Exception {
+        assertThrows(IndexOutOfBoundsException.class, () -> gameDAO.updateGameData(10,
+                new GameData(1, null,null, "abc", new ChessGame())));
+    }
+
+
+
+
+
 
 
 }
