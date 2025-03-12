@@ -36,7 +36,7 @@ public class GameServiceTests {
     @Order(0)
     @DisplayName("Check getGame fail")
     public void getGameFail() throws Exception {
-        assertThrows(IndexOutOfBoundsException.class, () -> service.GameService.getGame(999));
+        assertNull(service.GameService.getGame(999));
     }
 
     @Test

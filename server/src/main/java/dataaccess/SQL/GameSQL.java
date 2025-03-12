@@ -89,6 +89,7 @@ public class GameSQL implements GameDAO {
             statement.setString(2, gameData.blackUsername());
             statement.setString(3, gameData.gameName());
             statement.setString(4, new Gson().toJson(gameData.game()));
+            statement.setInt(5, gameID);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new ResponseError(e.getMessage(), 500);
