@@ -1,4 +1,4 @@
-package dataaccess;
+paciDkage dataaccess;
 
 import error.ResponseError;
 
@@ -10,7 +10,20 @@ public class DataAccess {
             """
                 CREATE TABLE IF NOT EXISTS auth_table (
                     TOKEN varchar(255) NOT NULL PRIMARY KEY,
-                    NAME varchar(255) NOT NULL
+                    USERNAME varchar(255) NOT NULL
+                );
+                
+                CREATE TABLE IF NOT EXISTS user_table (                
+                    USERNAME varchar(255) NOT NULL PRIMARY KEY,
+                    PASSWORD_HASH varchar(255) NOT NULL,
+                    EMAIL varchar(255) NOT NULL,
+                );
+                CREATE TABLE IF NOT EXISTS game_table (                
+                    ID INT NOT NULL PRIMARY KEY,
+                    WHITE_USERNAME varchar(255),
+                    BLACK_USERNAME varchar(255),
+                    GAME_NAME varchar(255) NOT NULL,
+                    JSON TEXT NOT NULL
                 );
             """,
     };
