@@ -13,10 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GameSQL implements GameDAO {
 
@@ -31,9 +28,10 @@ public class GameSQL implements GameDAO {
     }
 
     static List<GameData> gameDataArrayList = new ArrayList<>();
-    static int nextGameNum = 1;
     @Override
     public int createGame(String gameName) {
+        Random rand = new Random();
+        int nextGameNum = rand.nextInt(10000000);
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO game_table (ID, WHITE_USERNAME, BLACK_USERNAME, GAME_NAME, JSON) VALUES (?,?,?,?,?)"))
         {
@@ -45,8 +43,7 @@ public class GameSQL implements GameDAO {
             String chessPickled = new Gson().toJson(game);
             statement.setString(5, chessPickled);
             statement.executeUpdate();
-            nextGameNum++;
-            return nextGameNum - 1;
+            return nextGameNum;
         } catch (SQLException e) {
             throw new ResponseError(e.getMessage(), 500);
         }
@@ -81,9 +78,8 @@ public class GameSQL implements GameDAO {
 
     @Override
     public void updateGameData(int gameID, GameData gameData) {
-        if (gameID >= nextGameNum || gameID < 1) {
+        if (getGame(gameID) == null)
             throw new IndexOutOfBoundsException();
-        }
         try (PreparedStatement statement =
                      connection.prepareStatement(
                              "UPDATE game_table SET WHITE_USERNAME=?, BLACK_USERNAME=?," +

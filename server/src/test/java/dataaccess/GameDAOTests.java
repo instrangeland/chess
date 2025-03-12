@@ -12,7 +12,6 @@ import org.junit.jupiter.api.*;
 import request.LoginRequest;
 import request.LogoutRequest;
 import service.AuthService;
-import service.GameService;
 import service.UserService;
 
 import java.sql.SQLException;
@@ -23,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameDAOTests {
     static GameDAO gameDAO;
-
+    private int gameNum;
+    private int gameNum2;
     @BeforeAll
     public static void init() {
         gameDAO = new GameSQL();
@@ -41,7 +41,7 @@ public class GameDAOTests {
     @Order(0)
     @DisplayName("Check createGame")
     public void checkCreateGame() throws Exception {
-        int gameNum = gameDAO.createGame("abc");
+        gameNum = gameDAO.createGame("abc");
         GameData data = gameDAO.getGame(gameNum);
         assertEquals("abc", data.gameName());
     }
@@ -57,9 +57,9 @@ public class GameDAOTests {
     @Order(2)
     @DisplayName("Check getGame")
     public void checkGetGame() throws Exception {
-        int gameNum = gameDAO.createGame("abc");
-        System.out.println(gameNum);
-        GameData data = gameDAO.getGame(gameNum);
+        gameNum2 = gameDAO.createGame("abc");
+        System.out.println(gameNum2);
+        GameData data = gameDAO.getGame(gameNum2);
         assertEquals("abc", data.gameName());
     }
 
@@ -74,7 +74,9 @@ public class GameDAOTests {
     @Order(4)
     @DisplayName("Check updateGameData")
     public void checkUpdateGameData() throws Exception {
-        assertDoesNotThrow(() -> gameDAO.updateGameData(1, new GameData(1, null,
+        gameDAO.clear();
+        int gameNum = gameDAO.createGame("abc");
+        assertDoesNotThrow(() -> gameDAO.updateGameData(gameNum, new GameData(gameNum, null,
                 null, "abc", new ChessGame())));
     }
 
@@ -83,24 +85,24 @@ public class GameDAOTests {
     @DisplayName("Check updateGameData fails")
     public void checkUpdateGameDataFails() throws Exception {
         assertThrows(IndexOutOfBoundsException.class, () -> gameDAO.updateGameData(10,
-                new GameData(1, null,null, "abc", new ChessGame())));
+                new GameData(gameNum, null,null, "abc", new ChessGame())));
     }
 
     @Test
     @Order(6)
     @DisplayName("Check listGames")
     public void checkListGames() throws Exception {
-        GameData gameData = gameDAO.getGame(1);
-        gameDAO.createGame("abc");
-        GameData newGameData = new GameData(2, "abc", "def", "hello",
-                new ChessGame());
-        gameDAO.updateGameData(2, newGameData);
-        GameData thirdGame = gameDAO.getGame(3);
-
+        gameDAO.clear();
+        int gameNum = gameDAO.createGame("abc");
+        int game2 = gameDAO.createGame("abc");
         List<GameData> gameDataList = new ArrayList<>();
-        gameDataList.add(gameData);
-        gameDataList.add(newGameData);
-        gameDataList.add(thirdGame);
+        if (gameNum < game2) {
+            gameDataList.add(gameDAO.getGame(gameNum));
+            gameDataList.add(gameDAO.getGame(game2));
+        } else {
+            gameDataList.add(gameDAO.getGame(game2));
+            gameDataList.add(gameDAO.getGame(gameNum));
+        }
         assertEquals(gameDataList, gameDAO.listGames());
     }
 

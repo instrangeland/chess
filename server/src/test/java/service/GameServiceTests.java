@@ -37,7 +37,7 @@ public class GameServiceTests {
     @Order(0)
     @DisplayName("Check getGame fail")
     public void getGameFail() throws Exception {
-        assertNull(service.GameService.getGame(999));
+        assertNull(service.GameService.getGame(-1));
     }
 
     @Test
@@ -52,14 +52,16 @@ public class GameServiceTests {
 
     @Test
     @Order(2)
-    @DisplayName("Check updateGame and getGame")
+    @DisplayName("Check getGame")
     public void setGameCheck() throws Exception {
+        GameService.deleteGames();
+        int newGameNum = GameService.newGame("hello").gameID();
         GameData gameData = service.GameService.getGame(newGameNum);
-        GameData newGameData = new GameData(2, "abc", "def", "hello",
+        GameData newGameData = new GameData(newGameNum, "abc", "def", "hello",
                 new ChessGame());
-        service.GameService.updateGame(newGameNum, newGameData);
-
+        GameService.updateGame(newGameNum, newGameData);
         gameData = service.GameService.getGame(newGameNum);
+
         assertEquals(gameData, newGameData);
     }
 
@@ -67,7 +69,7 @@ public class GameServiceTests {
     @Order(3)
     @DisplayName("Check updateGame and getGame")
     public void setGameFailure() throws Exception {
-        assertThrows(IndexOutOfBoundsException.class, () -> service.GameService.updateGame(4,
+        assertThrows(IndexOutOfBoundsException.class, () -> service.GameService.updateGame(-1,
                 new GameData(1234, "abc", "def", "hello", new ChessGame())));
 
     }
@@ -76,18 +78,18 @@ public class GameServiceTests {
     @Order(4)
     @DisplayName("Check listgame")
     public void listGameCheck() throws Exception {
-        GameData gameData = service.GameService.getGame(newGameNum);
-        GameData newGameData = new GameData(2, "abc", "def", "hello",
-                new ChessGame());
-        service.GameService.updateGame(newGameNum, newGameData);
-
-        gameData = service.GameService.getGame(newGameNum);
-        assertEquals(gameData, newGameData);
-        GameData secondGame = GameService.getGame(secondGameNum);
+        service.GameService.deleteGames();
+        int gameNum = GameService.newGame("abc").gameID();
+        int game2 = GameService.newGame("abc").gameID();
 
         List<GameData> gameDataList = new ArrayList<>();
-        gameDataList.add(newGameData);
-        gameDataList.add(secondGame);
+        if (gameNum < game2) {
+            gameDataList.add(GameService.getGame(gameNum));
+            gameDataList.add(GameService.getGame(game2));
+        } else {
+            gameDataList.add(GameService.getGame(game2));
+            gameDataList.add(GameService.getGame(gameNum));
+        }
 
 
         ListGamesResponse gamesResponse = new ListGamesResponse(gameDataList);
@@ -99,10 +101,11 @@ public class GameServiceTests {
     @Order(5)
     @DisplayName("Check joinGame")
     public void joinGameCheck() throws Exception {
-        GameService.joinGame("abc", "BLACK", secondGameNum);
-        GameData game = GameService.getGame(secondGameNum);
-
-        assertEquals(game, new GameData(secondGameNum, null, "abc", "def",
+        GameService.deleteGames();
+        int gameNum = GameService.newGame("def").gameID();
+        GameService.joinGame("abc", "BLACK", gameNum);
+        GameData game = GameService.getGame(gameNum);
+        assertEquals(game, new GameData(gameNum, null, "abc", "def",
                 new ChessGame()));
     }
 
@@ -110,7 +113,10 @@ public class GameServiceTests {
     @Order(6)
     @DisplayName("Check joinGame")
     public void usernameTakenCheck() throws Exception {
-        assertThrows(TakenError.class, () -> GameService.joinGame("abc", "BLACK", secondGameNum));
+        GameService.deleteGames();
+        int gameNum = GameService.newGame("def").gameID();
+        GameService.joinGame("abc", "BLACK", gameNum);
+        assertThrows(TakenError.class, () -> GameService.joinGame("abc", "BLACK", gameNum));
     }
 
 
