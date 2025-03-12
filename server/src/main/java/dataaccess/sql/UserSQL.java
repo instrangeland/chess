@@ -1,11 +1,10 @@
-package dataaccess.SQL;
+package dataaccess.sql;
 
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
 import error.ResponseError;
-import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -13,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 public class UserSQL implements UserDAO {
     private final Connection connection;

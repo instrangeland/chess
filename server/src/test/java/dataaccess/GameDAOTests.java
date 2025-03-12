@@ -1,20 +1,11 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.*;
-import dataaccess.SQL.AuthSQL;
-import dataaccess.SQL.GameSQL;
+import dataaccess.sql.GameSQL;
 import error.ResponseError;
-import error.UnauthorizedError;
-import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import request.LoginRequest;
-import request.LogoutRequest;
-import service.AuthService;
-import service.UserService;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 

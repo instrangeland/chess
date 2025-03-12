@@ -2,8 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.GameDAO;
-import dataaccess.SQL.GameSQL;
-import error.ResponseError;
+import dataaccess.sql.GameSQL;
 import error.TakenError;
 import model.GameData;
 import org.junit.jupiter.api.*;

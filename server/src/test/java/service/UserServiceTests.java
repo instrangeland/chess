@@ -1,8 +1,8 @@
 package service;
 
 import dataaccess.*;
-import dataaccess.SQL.AuthSQL;
-import dataaccess.SQL.UserSQL;
+import dataaccess.sql.AuthSQL;
+import dataaccess.sql.UserSQL;
 import error.TakenError;
 import model.UserData;
 import org.junit.jupiter.api.*;

@@ -1,17 +1,9 @@
 package dataaccess;
 
-import dataaccess.*;
-import dataaccess.SQL.AuthSQL;
+import dataaccess.sql.AuthSQL;
 import error.ResponseError;
-import error.UnauthorizedError;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import request.LoginRequest;
-import request.LogoutRequest;
-import service.AuthService;
-import service.UserService;
-
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

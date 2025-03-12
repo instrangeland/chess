@@ -2,9 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
-import dataaccess.SQL.AuthSQL;
-import dataaccess.SQL.GameSQL;
-import dataaccess.SQL.UserSQL;
+import dataaccess.sql.AuthSQL;
+import dataaccess.sql.GameSQL;
+import dataaccess.sql.UserSQL;
 import error.HttpErrorMessage;
 import error.ResponseError;
 import handler.*;

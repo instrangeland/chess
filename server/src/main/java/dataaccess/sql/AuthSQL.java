@@ -1,11 +1,10 @@
-package dataaccess.SQL;
+package dataaccess.sql;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import error.ResponseError;
-import error.UnauthorizedError;
 import model.AuthData;
 
 import java.sql.*;
@@ -59,8 +58,9 @@ public class AuthSQL implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException, SQLException {
-        if (authToken == null)
+        if (authToken == null) {
             throw new ResponseError("Cannot pass deleteAuth null", 500);
+        }
         try (PreparedStatement statement = connection.prepareStatement("DELETE FROM auth_table WHERE TOKEN=?")) {
             statement.setString(1, authToken);
             statement.executeUpdate();

@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DataAccess {
-    private static final String[] createStatements = {
+    private static final String[] CREATE_STATEMENTS = {
             """
                 CREATE TABLE IF NOT EXISTS auth_table (
                     TOKEN varchar(255) PRIMARY KEY,
@@ -33,7 +33,7 @@ public class DataAccess {
         try {
             DatabaseManager.createDatabase();
             try (var conn = DatabaseManager.getConnection()) {
-                for (String statement : createStatements) {
+                for (String statement : CREATE_STATEMENTS) {
                     try (var preparedStatement = conn.prepareStatement(statement)) {
                         preparedStatement.executeUpdate();
                     }

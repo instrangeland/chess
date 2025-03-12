@@ -13,8 +13,9 @@ public class GameService {
     }
 
     public static void updateGame(int gameNum, GameData newData) {
-        if (gameDAO.getGame(gameNum) == null)
+        if (gameDAO.getGame(gameNum) == null) {
             throw new IndexOutOfBoundsException();
+        }
         gameDAO.updateGameData(gameNum, newData);
     }
 

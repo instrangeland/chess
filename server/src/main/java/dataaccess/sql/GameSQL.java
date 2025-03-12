@@ -1,4 +1,4 @@
-package dataaccess.SQL;
+package dataaccess.sql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
@@ -78,8 +78,9 @@ public class GameSQL implements GameDAO {
 
     @Override
     public void updateGameData(int gameID, GameData gameData) {
-        if (getGame(gameID) == null)
+        if (getGame(gameID) == null) {
             throw new IndexOutOfBoundsException();
+        }
         try (PreparedStatement statement =
                      connection.prepareStatement(
                              "UPDATE game_table SET WHITE_USERNAME=?, BLACK_USERNAME=?," +
