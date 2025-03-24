@@ -7,6 +7,8 @@ import exception.ResponseException;
 import jdk.jshell.spi.ExecutionControl;
 import model.AuthData;
 import model.GameData;
+import model.UserData;
+import request.JoinGameRequest;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.*;
@@ -20,15 +22,15 @@ public class ServerFascade {
         serverUrl = url;
     }
 
-    public void clear() {
-
+    public void clear() throws ResponseException {
+        this.makeRequest("DELETE", "/db", null, null);
     }
 
-    public AuthData register() {
+    public AuthData register(UserData userData) {
         return null;
     }
 
-    public AuthData login() {
+    public AuthData login(UserData userData) {
         return null;
     }
 
@@ -40,37 +42,14 @@ public class ServerFascade {
         return null;
     }
 
-    public GameData createGame() {
+    public GameData createGame(String gameName) {
         return null;
     }
 
-    public void joinGame() {
+    public void joinGame(JoinGameRequest joinGameRequest) {
 
     }
 
-
-    public Pet addPet(Pet pet) throws ResponseException {
-        var path = "/pet";
-        return this.makeRequest("POST", path, pet, Pet.class);
-    }
-
-    public void deletePet(int id) throws ResponseException {
-        var path = String.format("/pet/%s", id);
-        this.makeRequest("DELETE", path, null, null);
-    }
-
-    public void deleteAllPets() throws ResponseException {
-        var path = "/pet";
-        this.makeRequest("DELETE", path, null, null);
-    }
-
-    public Pet[] listPets() throws ResponseException {
-        var path = "/pet";
-        record listPetResponse(Pet[] pet) {
-        }
-        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-        return response.pet();
-    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
