@@ -26,16 +26,16 @@ public class ServerFascade {
         this.makeRequest("DELETE", "/db", null, null);
     }
 
-    public AuthData register(UserData userData) {
-        return null;
+    public AuthData register(UserData userData) throws ResponseException {
+        return this.makeRequest("POST", "/user", userData, AuthData.class);
     }
 
-    public AuthData login(UserData userData) {
-        return null;
+    public AuthData login(UserData userData) throws ResponseException {
+        return this.makeRequest("POST", "/session", userData, AuthData.class);
     }
 
-    public void logout() {
-
+    public void logout() throws ResponseException {
+        this.makeRequest("DELETE", "/session", null, null);
     }
 
     public List<GameData> listGames() {
