@@ -1,18 +1,18 @@
 package server;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
-import exception.ErrorResponse;
+import com.google.gson.reflect.TypeToken;
 import exception.ResponseException;
-import jdk.jshell.spi.ExecutionControl;
 import model.AuthData;
 import model.GameData;
+import model.ListGameData;
 import model.UserData;
 import request.JoinGameRequest;
+import java.lang.reflect.Type;
 
-import javax.naming.OperationNotSupportedException;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServerFascade {
@@ -47,8 +47,9 @@ public class ServerFascade {
         this.makeRequest("DELETE", "/session", null, null);
     }
 
-    public List<GameData> listGames() {
-        return null;
+    public ListGameData listGames() throws ResponseException {
+        Type gameList = new TypeToken<List<GameData>>() {}.getType();
+        return this.makeRequest("GET", "/game", null, ListGameData.class);
     }
 
     public GameData createGame(String gameName) {
