@@ -16,6 +16,7 @@ import java.net.*;
 import java.util.List;
 
 public class ServerFascade {
+    private String token;
     private final String serverUrl;
 
     public ServerFascade(String url) {
@@ -27,11 +28,19 @@ public class ServerFascade {
     }
 
     public AuthData register(UserData userData) throws ResponseException {
-        return this.makeRequest("POST", "/user", userData, AuthData.class);
+        AuthData data = this.makeRequest("POST", "/user", userData, AuthData.class);
+        if (data != null) {
+            this.token = data.authToken();
+        }
+        return data;
     }
 
     public AuthData login(UserData userData) throws ResponseException {
-        return this.makeRequest("POST", "/session", userData, AuthData.class);
+        AuthData data = this.makeRequest("POST", "/session", userData, AuthData.class);
+        if (data != null) {
+            this.token = data.authToken();
+        }
+        return data;
     }
 
     public void logout() throws ResponseException {
@@ -55,9 +64,11 @@ public class ServerFascade {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            if (token != null) {
+                http.setRequestProperty("authorization", token);
+            }
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
