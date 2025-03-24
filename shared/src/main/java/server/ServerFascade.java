@@ -3,10 +3,7 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import exception.ResponseException;
-import model.AuthData;
-import model.GameData;
-import model.ListGameData;
-import model.UserData;
+import model.*;
 import request.JoinGameRequest;
 import java.lang.reflect.Type;
 
@@ -25,6 +22,7 @@ public class ServerFascade {
 
     public void clear() throws ResponseException {
         this.makeRequest("DELETE", "/db", null, null);
+        this.token = null;
     }
 
     public AuthData register(UserData userData) throws ResponseException {
@@ -45,19 +43,19 @@ public class ServerFascade {
 
     public void logout() throws ResponseException {
         this.makeRequest("DELETE", "/session", null, null);
+        this.token = null;
     }
 
     public ListGameData listGames() throws ResponseException {
-        Type gameList = new TypeToken<List<GameData>>() {}.getType();
         return this.makeRequest("GET", "/game", null, ListGameData.class);
     }
 
-    public GameData createGame(String gameName) {
-        return null;
+    public GameData createGame(String gameName) throws ResponseException {
+        return this.makeRequest("POST", "/game", new GameName(gameName), GameData.class);
     }
 
-    public void joinGame(JoinGameRequest joinGameRequest) {
-
+    public void joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
+        this.makeRequest("PUT", "/game", joinGameRequest, null);
     }
 
 
