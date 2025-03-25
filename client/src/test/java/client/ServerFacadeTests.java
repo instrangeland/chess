@@ -58,34 +58,35 @@ public class ServerFacadeTests {
 
     @Test
     @Order(1)
-    @DisplayName("Check register fails")
+    @DisplayName("Check register fails with duplicate username")
     public void checkRegisterFails() throws Exception {
         assertThrows(ResponseException.class, () -> serverFascade.register(new UserData("def", "123", "hi")));
     }
 
     @Test
-    @Order(0)
-    @DisplayName("Check clear works")
+    @Order(2)
+    @DisplayName("Check login works")
     public void checkClear() throws Exception {
-        assertDoesNotThrow(() -> AuthService.auth(auth.authToken()));
+        assertDoesNotThrow(() -> serverFascade.login(new UserData("abc", "123", "hi")));
     }
 
     @Test
-    @Order(1)
-    @DisplayName("Check auth fails")
+    @Order(3)
+    @DisplayName("Check login fails with invalid user")
     public void checkClearNoFail() throws Exception {
-        assertThrows(UnauthorizedError.class, () -> AuthService.auth("abc"));
+        assertThrows(ResponseException.class, () -> serverFascade.login(new UserData("abc", "def", "hi"));
     }
 
     @Test
-    @Order(0)
+    @Order(4)
     @DisplayName("Check clear works")
     public void checkClear() throws Exception {
+
         assertDoesNotThrow(() -> AuthService.auth(auth.authToken()));
     }
 
     @Test
-    @Order(1)
+    @Order(5)
     @DisplayName("Check auth fails")
     public void checkClearNoFail() throws Exception {
         assertThrows(UnauthorizedError.class, () -> AuthService.auth("abc"));
