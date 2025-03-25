@@ -148,7 +148,7 @@ public class ServerFascadeTests {
     @Order(9)
     @DisplayName("Check createGame fails well")
     public void checkCreateGameFail() throws ResponseException {
-        assertThrows(ResponseException.class, () -> serverFascade.createGame("game1"));
+        assertThrows(ResponseException.class, () -> serverFascade.createGame(null));
     }
 
 
@@ -156,6 +156,7 @@ public class ServerFascadeTests {
     @Order(10)
     @DisplayName("Check joinGame works")
     public void checkJoinGame() throws ResponseException {
+        serverFascade.joinGame(new JoinGameRequest("BLACK", game1ID));
         assertDoesNotThrow(() -> serverFascade.joinGame(new JoinGameRequest("BLACK", game1ID)));
     }
 
