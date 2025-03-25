@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import error.ResponseError;
 import error.UnauthorizedError;
 import exception.ResponseException;
@@ -110,15 +111,15 @@ public class ServerFascadeTests {
         serverFascade.login(new UserData("abc", "123", "hi"));
         List<GameData> gameDataList = new ArrayList<>();
         if (game1ID < game2ID) {
-            gameDataList.add(new GameData(game1ID, null, null, "game1ID",
-                    null));
-            gameDataList.add(new GameData(game2ID, null, null, "game2ID",
-                    null));
+            gameDataList.add(new GameData(game1ID, null, null, "game1",
+                    new ChessGame()));
+            gameDataList.add(new GameData(game2ID, null, null, "game2",
+                    new ChessGame()));
         } else {
-            gameDataList.add(new GameData(game2ID, null, null, "game2ID",
-                    null));
-            gameDataList.add(new GameData(game1ID, null, null, "game1ID",
-                    null));
+            gameDataList.add(new GameData(game2ID, null, null, "game2",
+                    new ChessGame()));
+            gameDataList.add(new GameData(game1ID, null, null, "game1",
+                    new ChessGame()));
         }
         assertEquals(new ListGameData(gameDataList), serverFascade.listGames());
     }
