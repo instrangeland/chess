@@ -99,6 +99,7 @@ public class ServerFascadeTests {
     @Order(5)
     @DisplayName("Check logout fails")
     public void checkLogoutFails() throws ResponseException {
+        serverFascade.logout();
         assertThrows(ResponseException.class, () -> serverFascade.logout());
     }
 

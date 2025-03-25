@@ -42,6 +42,9 @@ public class ServerFascade {
     }
 
     public void logout() throws ResponseException {
+        if (this.token == null) {
+            throw new ResponseException(500, "Already logged out.");
+        }
         this.makeRequest("DELETE", "/session", null, null);
         this.token = null;
     }
