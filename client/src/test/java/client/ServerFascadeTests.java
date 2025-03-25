@@ -140,7 +140,7 @@ public class ServerFascadeTests {
         serverFascade.register(new UserData("fed", "123", "hi"));
         int gameID = serverFascade.createGame("abc").gameID();
         List<GameData> gameDataList = new ArrayList<>();
-        gameDataList.add(new GameData(gameID, null, null, "abc", null));
+        gameDataList.add(new GameData(gameID, null, null, "abc", new ChessGame()));
         assertEquals(new ListGameData(gameDataList), serverFascade.listGames());
     }
 
