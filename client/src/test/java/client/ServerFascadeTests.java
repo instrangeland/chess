@@ -156,7 +156,6 @@ public class ServerFascadeTests {
     @Order(10)
     @DisplayName("Check joinGame works")
     public void checkJoinGame() throws ResponseException {
-        serverFascade.joinGame(new JoinGameRequest("BLACK", game1ID));
         assertDoesNotThrow(() -> serverFascade.joinGame(new JoinGameRequest("BLACK", game1ID)));
     }
 
