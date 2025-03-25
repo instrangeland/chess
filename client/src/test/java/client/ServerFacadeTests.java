@@ -79,29 +79,96 @@ public class ServerFacadeTests {
 
     @Test
     @Order(4)
-    @DisplayName("Check clear works")
+    @DisplayName("Check logout works")
     public void checkClear() throws Exception {
-
-        assertDoesNotThrow(() -> AuthService.auth(auth.authToken()));
+        serverFascade.login(new UserData("abc", "123", "hi")
+        assertDoesNotThrow(() -> serverFascade.logout());
     }
 
     @Test
     @Order(5)
-    @DisplayName("Check auth fails")
+    @DisplayName("Check logout fails")
     public void checkClearNoFail() throws Exception {
-        assertThrows(UnauthorizedError.class, () -> AuthService.auth("abc"));
-    }
+        assertThrows(UnauthorizedError.class, serverFascade.logout());
     }
 
     @Test
-    @Order(0)
+    @Order(6)
+    @DisplayName("Check listgame works")
+    public void checkClear() throws Exception {
+        serverFascade.login(new UserData("abc", "123", "hi")
+                assertDoesNotThrow(() -> serverFascade.logout());
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Check listgame fails well")
+    public void checkClearNoFail() throws Exception {
+        serverFascade.clear();
+        assertDoesNotThrow(serverFascade.logout());
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Check listgame works")
+    public void checkClear() throws Exception {
+        serverFascade.login(new UserData("abc", "123", "hi")
+                assertDoesNotThrow(() -> serverFascade.logout());
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("Check listgame fails well")
+    public void checkClearNoFail() throws Exception {
+        serverFascade.clear();
+        assertDoesNotThrow(serverFascade.logout());
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Check creategame works")
+    public void checkClear() throws Exception {
+        serverFascade.login(new UserData("abc", "123", "hi")
+                assertDoesNotThrow(() -> serverFascade.logout());
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Check creategame fails")
+    public void checkClearNoFail() throws Exception {
+        serverFascade.clear();
+        assertDoesNotThrow(serverFascade.logout());
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("Check joinGame works")
+    public void checkClear() throws Exception {
+        serverFascade.login(new UserData("abc", "123", "hi")
+                assertDoesNotThrow(() -> serverFascade.logout());
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("Check joinGame fails")
+    public void checkClearNoFail() throws Exception {
+        serverFascade.clear();
+        assertDoesNotThrow(serverFascade.logout());
+    }
+
+
+
+
+
+    @Test
+    @Order(14)
     @DisplayName("Check clear works")
     public void checkClear() throws Exception {
         assertDoesNotThrow(() -> AuthService.auth(auth.authToken()));
     }
 
     @Test
-    @Order(1)
+    @Order(15)
     @DisplayName("Check clear fails when server is off")
     public void checkClearNoFail() throws Exception {
         server.stop();
