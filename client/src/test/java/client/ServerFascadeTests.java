@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerFascadeTests {
     static Server server;
     static ServerFascade serverFascade;
@@ -35,6 +35,7 @@ public class ServerFascadeTests {
 
     @BeforeEach
     public void setup() throws ResponseException {
+        serverFascade.clear();
         serverFascade.register(new UserData("abc", "123", "hi"));
         serverFascade.register(new UserData("def", "123", "hi"));
         serverFascade.login(new UserData("abc", "123", "hi"));
@@ -42,11 +43,10 @@ public class ServerFascadeTests {
         game2ID = serverFascade.createGame("game2").gameID();
     }
 
-    @AfterEach
-    public void resetServer() throws ResponseException {
-        serverFascade.login(new UserData("abc", "123", "hi"));
-        serverFascade.clear();
-    }
+//    @AfterEach
+//    public void resetServer() throws ResponseException {
+//        serverFascade.clear();
+//    }
 
 
     @AfterAll
@@ -61,7 +61,8 @@ public class ServerFascadeTests {
     @Order(0)
     @DisplayName("Check register works")
     public void checkRegister() throws ResponseException {
-        assertDoesNotThrow(() -> serverFascade.register(new UserData("fed", "123", "hi")));
+        serverFascade.clear();
+        assertDoesNotThrow(() -> serverFascade.register(new UserData("check1", "mypwd", "hi")));
     }
 
     @Test
@@ -145,8 +146,7 @@ public class ServerFascadeTests {
     @Order(9)
     @DisplayName("Check createGame fails well")
     public void checkCreateGameFail() throws ResponseException {
-        serverFascade.clear();
-        assertDoesNotThrow(() -> serverFascade.logout());
+        assertThrows(ResponseException.class, () -> serverFascade.createGame("game1"));
     }
 
 
@@ -175,7 +175,7 @@ public class ServerFascadeTests {
 
     @Test
     @Order(13)
-    @DisplayName("Check clear fails when server is off")
+    @DisplayName("Check clear fail fine when server is off")
     public void checkClearNoFail() throws Exception {
         server.stop();
         assertThrows(ResponseException.class, () -> serverFascade.clear());
