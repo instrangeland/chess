@@ -50,8 +50,8 @@ public class ServerFascade {
         return this.makeRequest("GET", "/game", null, ListGameData.class);
     }
 
-    public GameData createGame(String gameName) throws ResponseException {
-        return this.makeRequest("POST", "/game", new GameName(gameName), GameData.class);
+    public GameID createGame(String gameName) throws ResponseException {
+        return this.makeRequest("POST", "/game", new GameName(gameName), GameID.class);
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws ResponseException {

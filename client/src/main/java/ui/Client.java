@@ -1,5 +1,5 @@
 package ui;
 
 public class Client {
-    public Client(String serverURL, )
+    //public Client(String serverURL, )
 }
