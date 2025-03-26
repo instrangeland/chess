@@ -1,11 +1,11 @@
 package ui;
 
+import chess.ChessGame;
 import ui.Client;
 
 import java.util.Scanner;
 
-import static ui.EscapeSequences.SET_TEXT_COLOR_BLACK;
-import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+import static ui.EscapeSequences.*;
 
 public class Repl {
     private final Client client;
@@ -26,7 +26,7 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -38,5 +38,4 @@ public class Repl {
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
     }
-
 }
