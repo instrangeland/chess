@@ -44,11 +44,6 @@ public class ServerFascadeTests {
         game2ID = serverFascade.createGame("game2").gameID();
     }
 
-//    @AfterEach
-//    public void resetServer() throws ResponseException {
-//        serverFascade.clear();
-//    }
-
 
     @AfterAll
     static void stopServer() {

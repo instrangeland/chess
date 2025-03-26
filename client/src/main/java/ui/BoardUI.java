@@ -82,8 +82,8 @@ public class BoardUI {
             } else {
                 out.print(SET_BG_COLOR_WHITE);
             }
-            int piece_col = xStart + xDirection * x;
-            ChessPiece piece = board.getPiece(new ChessPosition(lineNo, piece_col));
+            int pieceCol = xStart + xDirection * x;
+            ChessPiece piece = board.getPiece(new ChessPosition(lineNo, pieceCol));
             if (piece == null) {
                 out.print(" ");
             } else {
