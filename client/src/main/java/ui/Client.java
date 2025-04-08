@@ -26,6 +26,7 @@ public class Client {
     private final Repl repl;
     private List<GameData> games = null;
     private ChessGame currentGame = null;
+    private BoardUI.Perspective currentPerspective = null;
     public Client(String serverURL, Repl repl) {
         server = new ServerFascade(serverURL);
         this.serverURL = serverURL;
@@ -67,14 +68,19 @@ public class Client {
                     val = observe(split);
                     break;
                 case "redraw":
+                    val = redraw(split);
                     break;
                 case "leave":
+                    val = leave(split);
                     break;
                 case "move":
+                    val = move(split);
                     break;
                 case "resign":
+                    val = resign(split);
                     break;
                 case "legal":
+                    val = legal(split);
                     break;
                 default:
                     System.out.println("Command " + operation +" is invalid. Valid commands:");
@@ -159,6 +165,7 @@ public class Client {
             if (Objects.equals(values[2], "white")) {
                 color = ChessGame.TeamColor.WHITE;
                 perspective = BoardUI.Perspective.WHITE;
+                this.currentPerspective = perspective;
                 if (game.whiteUsername() == null) {
                     server.joinGame(new JoinGameRequest("WHITE", game.gameID()));
                 } else {
@@ -167,6 +174,7 @@ public class Client {
             } else if (Objects.equals(values[2], "black")) {
                 color = ChessGame.TeamColor.BLACK;
                 perspective = BoardUI.Perspective.BLACK;
+                this.currentPerspective = perspective;
                 if (game.blackUsername() == null) {
                     server.joinGame(new JoinGameRequest("BLACK", game.gameID()));
                 } else {
@@ -222,6 +230,7 @@ public class Client {
             int num = Integer.parseInt(values[1])-1;
             GameData game = games.get(num);
             BoardUI.Perspective perspective = BoardUI.Perspective.OBSERVER;
+            this.currentPerspective = perspective;
             BoardUI.drawBoard(games.get(num).game(), perspective, null);
             return "Viewing game " + (num+1);
         } catch (ResponseException e) {
@@ -263,21 +272,31 @@ public class Client {
 
     private String redraw(String[] values) {
         assumeUserState(State.INGAME, "redraw the board");
-
-        BoardUI.drawBoard(currentGame, perspective, null);
+        if (currentPerspective == null) {
+            throw new IllegalStateException("You must be observing or in a game to redraw");
+        }
+        BoardUI.drawBoard(currentGame, currentPerspective, null);
+        return "Redrawn game";
 
     }
     private String leave(String[] values) {
         assumeUserState(State.INGAME, "leave a game");
+        currentPerspective = null;
+        userState = State.SIGNEDIN;
+        // TODO ensure we close the websocket!
+        return null;
     }
     private String move(String[] values) {
         assumeUserState(State.INGAME, "move a piece");
+        return null;
     }
     private String resign(String[] values) {
         assumeUserState(State.INGAME, "resign a game");
+        return null;
     }
     private String legal(String[] values) {
         assumeUserState(State.INGAME, "display legal moves");
+        return null;
     }
 
     private void assumeUserState(State state, String action) {
