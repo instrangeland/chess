@@ -30,6 +30,15 @@ public class ConnectionManager {
         connectionsByUsername.remove(username);
     }
 
+    public void send(String username, int gameID, String message) throws IOException {
+        ConcurrentHashMap<String, Connection> connectionsByUsername = connectionsByGameID.get(gameID);
+        if (connectionsByUsername == null) {
+            throw new IllegalArgumentException("username "+ username + " does not exist");
+        }
+        Connection connection = connectionsByUsername.get(username);
+        connection.send(message);
+    }
+
     public void broadcast(String excludeUsername, int gameID, ServerMessage message) throws IOException {
         ConcurrentHashMap<String, Connection> connectionsByUsername = connectionsByGameID.get(gameID);
         if (connectionsByUsername == null) {
