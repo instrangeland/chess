@@ -36,6 +36,6 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + SET_TEXT_COLOR_BLUE + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 }

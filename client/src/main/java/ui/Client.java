@@ -25,6 +25,7 @@ public class Client {
     private final String serverURL;
     private final Repl repl;
     private List<GameData> games = null;
+    private ChessGame currentGame = null;
     public Client(String serverURL, Repl repl) {
         server = new ServerFascade(serverURL);
         this.serverURL = serverURL;
@@ -65,6 +66,16 @@ public class Client {
                 case "observe":
                     val = observe(split);
                     break;
+                case "redraw":
+                    break;
+                case "leave":
+                    break;
+                case "move":
+                    break;
+                case "resign":
+                    break;
+                case "legal":
+                    break;
                 default:
                     System.out.println("Command " + operation +" is invalid. Valid commands:");
                     val = help();
@@ -78,9 +89,7 @@ public class Client {
     }
 
     private String login(String[] values) {
-        if (userState != State.SIGNEDOUT) {
-            System.out.println(logout());
-        }
+        assumeUserState(State.SIGNEDOUT, "login");
         if (values.length != 3) {
             throw new IllegalArgumentException("Please use the form login <USERNAME> <PASSWORD>");
         }
@@ -99,9 +108,7 @@ public class Client {
     }
 
     private String register(String[] values) {
-        if (userState != State.SIGNEDOUT) {
-            throw new IllegalStateException("You must be logged out to create a user.");
-        }
+        assumeUserState(State.SIGNEDOUT, "register a user");
         if (values.length != 4) {
             throw new IllegalArgumentException("Please use the form register <USERNAME> <PASSWORD> <EMAIL>");
         }
@@ -110,14 +117,11 @@ public class Client {
             userState = State.SIGNEDIN;
             return "Welcome, you are now logged in as "+data.username();
         } catch (ResponseException e) {
-            System.out.println(e.getMessage());
             throw new IllegalArgumentException("Failed to register, try again.");
         }
     }
     private String logout() {
-        if (userState != State.SIGNEDIN) {
-            throw new IllegalStateException("You must be logged in and not in a game to logout.");
-        }
+        assumeUserState(State.SIGNEDIN, "logout");
         try {
             server.logout();
             userState = State.SIGNEDOUT;
@@ -127,6 +131,7 @@ public class Client {
         }
     }
     private String create(String[] values) {
+        assumeUserState(State.SIGNEDIN, "create a game");
         if (userState != State.SIGNEDIN) {
             throw new IllegalStateException("You must be logged in and not in a game to create a game.");
         }
@@ -141,9 +146,7 @@ public class Client {
         }
     }
     private String join(String[] values) {
-        if (userState != State.SIGNEDIN) {
-            throw new IllegalStateException("You must be logged in and not in a game to join a game.");
-        }
+        assumeUserState(State.SIGNEDIN, "join a game");
         if (values.length != 3) {
             throw new IllegalArgumentException("Please use the form join <NUMBER> [WHITE|BLACK]");
         }
@@ -172,7 +175,8 @@ public class Client {
             } else {
                 throw new IllegalArgumentException("Make sure your team color is white or black");
             }
-            BoardUI.drawBoard(games.get(num).game(), perspective);
+            currentGame = games.get(num).game();
+            BoardUI.drawBoard(currentGame, perspective, null);
             return "Joined game " +num;
         } catch (ResponseException e) {
             throw new IllegalArgumentException("Failed to create, try again later...");
@@ -193,11 +197,13 @@ public class Client {
             refreshGames();
             StringBuilder lines = new StringBuilder();
             //Number Name Black White
-            lines.append(String.format("| %15s | %15s | %15s | %15s |\n", "Number", "Name", "White", "Black"));
+            lines.append(String.format("| %15s | %15s | %15s | %15s |\n", "Number", "Name", "White User", "Black User"));
             int gameNum = 0;
             for (GameData game:games) {
+                String whiteUser = game.whiteUsername() == null ? "none" : game.whiteUsername();
+                String blackUser = game.blackUsername() == null ? "none" : game.blackUsername();
                 lines.append(String.format("| %15d | %15s | %15s | %15s |\n", gameNum + 1, game.gameName(),
-                        game.whiteUsername(), game.blackUsername()));
+                        whiteUser, blackUser));
                 gameNum++;
             }
             return lines.toString();
@@ -207,9 +213,7 @@ public class Client {
     }
 
     private String observe(String[] values) {
-        if (userState != State.SIGNEDIN) {
-            throw new IllegalStateException("You must be logged in and not in a game to observe a game.");
-        }
+        assumeUserState(State.SIGNEDIN, "observe a game");
         if (values.length != 2) {
             throw new IllegalArgumentException("Please use the form observe <NUMBER>");
         }
@@ -218,7 +222,7 @@ public class Client {
             int num = Integer.parseInt(values[1])-1;
             GameData game = games.get(num);
             BoardUI.Perspective perspective = BoardUI.Perspective.OBSERVER;
-            BoardUI.drawBoard(games.get(num).game(), perspective);
+            BoardUI.drawBoard(games.get(num).game(), perspective, null);
             return "Viewing game " + (num+1);
         } catch (ResponseException e) {
             throw new IllegalArgumentException("Failed to create, try again later...");
@@ -255,5 +259,36 @@ public class Client {
             builtString.append(createHelpLine(commands[i], descriptions[i]));
         }
         return builtString.toString();
+    }
+
+    private String redraw(String[] values) {
+        assumeUserState(State.INGAME, "redraw the board");
+
+        BoardUI.drawBoard(currentGame, perspective, null);
+
+    }
+    private String leave(String[] values) {
+        assumeUserState(State.INGAME, "leave a game");
+    }
+    private String move(String[] values) {
+        assumeUserState(State.INGAME, "move a piece");
+    }
+    private String resign(String[] values) {
+        assumeUserState(State.INGAME, "resign a game");
+    }
+    private String legal(String[] values) {
+        assumeUserState(State.INGAME, "display legal moves");
+    }
+
+    private void assumeUserState(State state, String action) {
+        if (userState != state) {
+            if (state == State.INGAME) {
+                throw new IllegalStateException("You must be in a game to "+action + ".");
+            } else if (state == State.SIGNEDIN) {
+                throw new IllegalStateException("You must be logged in and not in a game to "+action + ".");
+            } else {
+                throw new IllegalStateException("You must not be logged in and not in a game to "+action + ".");
+            }
+        }
     }
 }
