@@ -33,6 +33,7 @@ public class UserGameCommand {
     }
 
     public enum CommandType {
+        OBSERVE,
         CONNECT,
         MAKE_MOVE,
         LEAVE,
