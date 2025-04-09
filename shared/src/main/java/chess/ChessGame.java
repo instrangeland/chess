@@ -14,6 +14,16 @@ import java.util.Set;
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
     private TeamColor currentPlayer;
+    private boolean gameDone = false;
+    private TeamColor winningTeam;
+
+    public boolean isGameDone() {
+        return gameDone;
+    }
+
+    public TeamColor getWinningTeam() {
+        return winningTeam;
+    }
 
     public ChessGame() {
         board.resetBoard();
@@ -94,6 +104,13 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         attemptMoveOnBoard(move, this.board);
+        if (isInCheckmate(getTeamTurn())) {
+            gameDone = true;
+            winningTeam = getTeamTurn();
+        } else if (isInStalemate(getTeamTurn())) {
+            gameDone = true;
+            winningTeam = null;
+        }
     }
 
     private void attemptMoveOnBoard(ChessMove move, ChessBoard board) throws InvalidMoveException {

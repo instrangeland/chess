@@ -31,6 +31,11 @@ public class ChessMove {
         this.enPassantPieceToKill = enPassantPieceToKill;
     }
 
+    @Override
+    public String toString() {
+        return startPosition.toString() + " " + endPosition.toString();
+    }
+
     private ChessPosition enPassantPieceToKill;
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece, ChessPosition enPassantPieceToKill) {

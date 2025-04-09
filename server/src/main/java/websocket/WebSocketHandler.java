@@ -2,6 +2,7 @@ package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
@@ -18,6 +19,7 @@ import service.AuthService;
 import service.GameService;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -35,8 +37,9 @@ public class WebSocketHandler {
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
 
-    void sendGame(GameData gameData, String username) {
-
+    void sendGame(GameData gameData, int gameID, String username) throws IOException {
+        LoadMessage message = new LoadMessage(gameData);
+        connections.send(username, gameID, new Gson().toJson(message));
     }
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
@@ -120,15 +123,8 @@ public class WebSocketHandler {
             NotificationMessage message = new NotificationMessage("Player "+username +
                     " has joined as team "+ command.getColor().toString() + ".");
             connections.broadcast(username, gameID, message);
-
-
+            sendGame(gameData, gameID, username);
         }
-
-
-
-
-
-
     }
 
     private void resign(String auth, UserGameCommand command) {
@@ -143,14 +139,35 @@ public class WebSocketHandler {
         connections.broadcast(visitorName, notification);
     }
 
-    public void makeMove(String auth, UserGameCommand command) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+    public void makeMove(String username, String auth, MoveCommand command) throws ResponseException, IOException {
+        int gameID = command.getGameID();
+        if (!isPlayer(command.getAuthToken())) {
+            makeErrorMessage(gameID, username, "Invalid auth token");
+            return;
         }
+        GameData gameData = gameDAO.getGame(gameID);
+        if (gameData == null) {
+            makeErrorMessage(gameID, username, "No such gameID: " + gameID);
+            return;
+        }
+        ChessGame game = gameData.game();
+        if (game.isGameDone()) {
+            makeErrorMessage(gameID, username, "The game is over! No more moves!");
+        }
+        ChessGame.TeamColor color = game.getTeamTurn();
+        try {
+            game.makeMove(command.getMove());
+            connections.broadcast(username, gameID, new NotificationMessage("Player "+username+" made move "
+                    +command.getMove()));
+            sendGame(gameData, gameID, username);
+        }
+        catch (InvalidMoveException e) {
+            if (game.isInCheck(color)) {
+                makeErrorMessage(gameID, username, "The game would still be in check with that move");
+                return;
+            }
+        }
+
     }
 
     public String getTeamUsername(GameData gameData, ChessGame.TeamColor color) {

@@ -16,6 +16,8 @@ public class ChessPosition {
 
     static Map<String, Integer> charToColMap = new HashMap<String, Integer>();
 
+    String colLabels = "abcdefgh";
+
     static {
         charToColMap.put("a", 1);
         charToColMap.put("b", 2);
@@ -25,12 +27,16 @@ public class ChessPosition {
         charToColMap.put("f", 6);
         charToColMap.put("g", 7);
         charToColMap.put("h", 8);
-
     }
 
     public ChessPosition(int row, int col) {
         this.col = col;
         this.row = row;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(colLabels.charAt(col)) + row;
     }
 
     public static ChessPosition fromString(String input) {
@@ -82,13 +88,6 @@ public class ChessPosition {
         return new ChessPosition(this.row + offset, this.col);
     }
 
-    @Override
-    public String toString() {
-        return "ChessPosition{" +
-                "row=" + row +
-                ", col=" + col +
-                '}';
-    }
 
     public ChessPosition offsetColBy(int offset) {
         return new ChessPosition(this.row, this.col + offset);
