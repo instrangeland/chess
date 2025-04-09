@@ -67,11 +67,11 @@ public class WebSocketHandler {
                     break;
                 case LEAVE:
                     LeaveCommand leaveCommand = new Gson().fromJson(message, LeaveCommand.class);
-                    makeMove(auth, leaveCommand);
+                    exit(username, leaveCommand);
                     break;
                 case RESIGN:
                     ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
-                    makeMove(auth, resignCommand);
+                    resign(username, resignCommand);
                     break;
             }
         }
@@ -122,16 +122,40 @@ public class WebSocketHandler {
         }
     }
 
-    private void resign(String auth, UserGameCommand command) {
+    private void resign(String username, ResignCommand command) throws IOException {
+        int gameID = command.getGameID();
+        if (!isPlayer(command.getAuthToken())) {
+            makeErrorMessage(gameID, username, "Invalid auth token");
+            return;
+        }
+        GameData gameData = gameDAO.getGame(gameID);
+        if (gameData == null) {
+            makeErrorMessage(gameID, username, "No such gameID: " + gameID);
+            return;
+        }
+        if (!username.equals(getTeamUsername(gameData, ChessGame.TeamColor.WHITE)) &&
+                !username.equals(getTeamUsername(gameData, ChessGame.TeamColor.BLACK)) ) {
+            makeErrorMessage(gameID, username, "You are not a player");
+        }
 
+        gameData.game().resign(command.getColor());
+        connections.broadcast(username, gameID, new NotificationMessage(username + " resigns!"));
     }
 
 
-    private void exit(String auth, UserGameCommand command) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
+    private void exit(String username, UserGameCommand command) throws IOException {
+        int gameID = command.getGameID();
+        if (!isPlayer(command.getAuthToken())) {
+            makeErrorMessage(gameID, username, "Invalid auth token");
+            return;
+        }
+        GameData gameData = gameDAO.getGame(gameID);
+        if (gameData == null) {
+            makeErrorMessage(gameID, username, "No such gameID: " + gameID);
+            return;
+        }
+        connections.remove(username, gameID);
+        connections.broadcast(username, gameID, new NotificationMessage("Player "+username+ " left the game."));
     }
 
     public void setDAOs(GameDAO gameDAO, AuthDAO authDAO) {
@@ -139,7 +163,7 @@ public class WebSocketHandler {
         this.authDAO = authDAO;
     }
 
-    public void makeMove(String username, String auth, MoveCommand command) throws ResponseException, IOException {
+    public void makeMove(String username, MoveCommand command) throws ResponseException, IOException {
         int gameID = command.getGameID();
         if (!isPlayer(command.getAuthToken())) {
             makeErrorMessage(gameID, username, "Invalid auth token");
@@ -154,7 +178,12 @@ public class WebSocketHandler {
         if (game.isGameDone()) {
             makeErrorMessage(gameID, username, "The game is over! No more moves!");
         }
+
         ChessGame.TeamColor color = game.getTeamTurn();
+
+        if (!username.equals(getTeamUsername(gameData, color))) {
+            makeErrorMessage(gameID, username, "It is "+getTeamUsername(gameData, color)+"'s turn, not yours");
+        }
         try {
             game.makeMove(command.getMove());
             connections.broadcast(username, gameID, new NotificationMessage("Player "+username+" made move "

@@ -205,6 +205,13 @@ public class ChessGame {
         return false;
     }
 
+    public void resign(TeamColor color) {
+        if (!gameDone) {
+            gameDone = true;
+            winningTeam = color.oppositeColor();
+        }
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
