@@ -1,7 +1,10 @@
 package websocketFascade;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
+import websocket.commands.ResignCommand;
 import websocket.messages.*;
 
 import javax.websocket.*;
@@ -36,9 +39,14 @@ public class WebSocketFacade extends Endpoint {
                             notificationHandler.error(errorMessage);
                             break;
                         case NOTIFICATION:
-
+                            NotificationMessage notificationMessage =
+                                    new Gson().fromJson(message, NotificationMessage.class);
+                            notificationHandler.notify(notificationMessage);
                             break;
                         case LOAD_GAME:
+                            LoadMessage loadMessage =
+                                    new Gson().fromJson(message, LoadMessage.class);
+                            notificationHandler.loadGame(loadMessage);
                             break;
                     }
                 }
@@ -51,6 +59,23 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void resign(String authToken, int gameID, ChessGame.TeamColor color) {
+        try {
+            ResignCommand command = new ResignCommand()
+        } catch (IOException) {
+
+        }
+    }
+    public void move() {
+
+    }
+    public void leave() {
+
+    }
+    public void connect() {
+
     }
 
 

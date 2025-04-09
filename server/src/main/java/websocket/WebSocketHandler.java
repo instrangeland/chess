@@ -137,8 +137,11 @@ public class WebSocketHandler {
                 !username.equals(getTeamUsername(gameData, ChessGame.TeamColor.BLACK)) ) {
             makeErrorMessage(gameID, username, "You are not a player");
         }
-
-        gameData.game().resign(command.getColor());
+        if (username.equals(getTeamUsername(gameData, ChessGame.TeamColor.WHITE))) {
+            gameData.game().resign(ChessGame.TeamColor.WHITE);
+        } else {
+            gameData.game().resign(ChessGame.TeamColor.BLACK);
+        }
         connections.broadcast(username, gameID, new NotificationMessage(username + " resigns!"));
     }
 
