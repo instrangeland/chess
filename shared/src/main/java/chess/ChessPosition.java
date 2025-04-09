@@ -39,7 +39,7 @@ public class ChessPosition {
         return String.valueOf(colLabels.charAt(col)) + row;
     }
 
-    public static ChessPosition fromString(String input) {
+    public static ChessPosition fromString(String input) throws IllegalArgumentException{
         if (input == null) {
             throw new IllegalArgumentException("input cannot be null");
         }

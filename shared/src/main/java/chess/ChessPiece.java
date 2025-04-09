@@ -19,6 +19,21 @@ public class ChessPiece {
     private boolean hasMoved = false;
     private PieceType pieceType;
 
+    static Map<String, ChessPiece.PieceType> stringPieceTypeMap = new HashMap<>();
+
+    static {
+        stringPieceTypeMap.put("P", ChessPiece.PieceType.PAWN);
+        stringPieceTypeMap.put("R", ChessPiece.PieceType.ROOK);
+        stringPieceTypeMap.put("B", ChessPiece.PieceType.BISHOP);
+        stringPieceTypeMap.put("N", ChessPiece.PieceType.KNIGHT);
+        stringPieceTypeMap.put("Q", ChessPiece.PieceType.QUEEN);
+        stringPieceTypeMap.put("K", ChessPiece.PieceType.KING);
+    }
+
+    public static ChessPiece.PieceType valueOf(String piece) {
+        return stringPieceTypeMap.get(piece);
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.pieceType = type;

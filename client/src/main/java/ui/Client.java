@@ -1,6 +1,8 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -8,6 +10,7 @@ import model.GameID;
 import model.UserData;
 import request.JoinGameRequest;
 import server.ServerFascade;
+import websocket.messages.NotificationMessage;
 import websocketFacade.NotificationHandler;
 import websocketFacade.WebSocketFacade;
 
@@ -20,11 +23,12 @@ public class Client {
     private static State userState = State.SIGNEDOUT;
     private final ServerFascade server;
     private final String serverURL;
-    private final Repl repl;
+    private final NotificationHandler repl;
     private WebSocketFacade ws;
     private List<GameData> games = null;
-    private ChessGame currentGame = null;
+    private GameData currentGame = null;
     private BoardUI.Perspective currentPerspective = null;
+    private AuthData currentAuth = null;
     public Client(String serverURL, NotificationHandler repl) {
         server = new ServerFascade(serverURL);
         this.serverURL = serverURL;
@@ -99,9 +103,9 @@ public class Client {
             throw new IllegalArgumentException("Please use the form login <USERNAME> <PASSWORD>");
         }
         try {
-            AuthData data = server.login(new UserData(values[1], values[2], null));
+            currentAuth = server.login(new UserData(values[1], values[2], null));
             userState = State.SIGNEDIN;
-            return "Logged in successfully as "+data.username();
+            return "Logged in successfully as "+currentAuth.username();
         } catch (ResponseException e) {
             userState = State.SIGNEDOUT;
             return "Username or password is invalid";
@@ -182,8 +186,9 @@ public class Client {
             } else {
                 throw new IllegalArgumentException("Make sure your team color is white or black");
             }
-            currentGame = games.get(num).game();
-            BoardUI.drawBoard(currentGame, perspective, null);
+            currentGame = games.get(num);
+            BoardUI.drawBoard(currentGame.game(), perspective, null);
+            ws.join(currentAuth.authToken(), game.gameID(), color);
             return "Joined game " +num;
         } catch (ResponseException e) {
             throw new IllegalArgumentException("Failed to create, try again later...");
@@ -231,6 +236,7 @@ public class Client {
             BoardUI.Perspective perspective = BoardUI.Perspective.OBSERVER;
             this.currentPerspective = perspective;
             BoardUI.drawBoard(games.get(num).game(), perspective, null);
+            ws.observe(currentAuth.authToken(), games.get(num).gameID());
             return "Viewing game " + (num+1);
         } catch (ResponseException e) {
             throw new IllegalArgumentException("Failed to create, try again later...");
@@ -261,7 +267,10 @@ public class Client {
             descriptions = new String[]{"create an game with a specific name", "logs out", "lists all games",
                     "joins a numbered game", "watch a current game", "show this list again"};
         } else {
-            throw new IllegalArgumentException("game commands have not been implemented yet");
+            commands = new String[]{"redraw", "leave", "make move <startpos> <endpos>", "resign", "legal <pos>"
+                    , "help"};
+            descriptions = new String[]{"redraws the chessboard", "leaves the current game", "makes a move",
+                    "resign", "highlights legal moves for a piece at a position", "show this list again"};
         }
         for (int i=0; i<commands.length; i++) {
             builtString.append(createHelpLine(commands[i], descriptions[i]));
@@ -274,19 +283,26 @@ public class Client {
         if (currentPerspective == null) {
             throw new IllegalStateException("You must be observing or in a game to redraw");
         }
-        BoardUI.drawBoard(currentGame, currentPerspective, null);
+        BoardUI.drawBoard(currentGame.game(), currentPerspective, null);
         return "Redrawn game";
 
     }
-    private String leave(String[] values) {
+    private String leave(String[] values) throws ResponseException {
         assumeUserState(State.INGAME, "leave a game");
         currentPerspective = null;
         userState = State.SIGNEDIN;
-        // TODO ensure we close the websocket!
+        ws.leave(currentAuth.authToken(), currentGame.gameID());
         return null;
     }
-    private String move(String[] values) {
+    private String move(String[] values) throws IllegalArgumentException, ResponseException {
         assumeUserState(State.INGAME, "move a piece");
+        if (values.length != 3) {
+            throw new IllegalArgumentException("Please use the form move <POS> <POS>");
+        }
+        ChessPosition startPos = ChessPosition.fromString(values[1]);
+        ChessPosition endPos = ChessPosition.fromString(values[2]);
+        ChessMove move = new ChessMove(startPos, endPos);
+        ws.move(currentAuth.authToken(), currentGame.gameID(), move);
         return null;
     }
     private String resign(String[] values) {
