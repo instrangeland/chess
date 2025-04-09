@@ -5,6 +5,8 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
 import websocket.commands.MoveCommand;
 import websocket.commands.ResignCommand;
 import websocket.messages.*;
@@ -79,17 +81,17 @@ public class WebSocketFacade extends Endpoint {
             throw new ResponseException(500, e.getMessage());
         }
     }
-    public void leave(String authToken, int gameID, ChessMove move) throws ResponseException {
+    public void leave(String authToken, int gameID) throws ResponseException {
         try {
-            MoveCommand command = new MoveCommand(authToken, gameID, move);
+            LeaveCommand command = new LeaveCommand(authToken, gameID);
             send(new Gson().toJson(command));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
         }
     }
-    public void connect(String authToken, int gameID, ChessMove move) throws ResponseException {
+    public void connect(String authToken, int gameID) throws ResponseException {
         try {
-            MoveCommand command = new MoveCommand(authToken, gameID, move);
+            ConnectCommand command = new ConnectCommand(authToken, gameID);
             send(new Gson().toJson(command));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
