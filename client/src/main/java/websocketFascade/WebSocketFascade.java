@@ -1,9 +1,11 @@
 package websocketFascade;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import websocket.commands.MoveCommand;
 import websocket.commands.ResignCommand;
 import websocket.messages.*;
 
@@ -61,21 +63,37 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void resign(String authToken, int gameID, ChessGame.TeamColor color) {
+    public void resign(String authToken, int gameID) throws ResponseException {
         try {
-            ResignCommand command = new ResignCommand()
-        } catch (IOException) {
-
+            ResignCommand command = new ResignCommand(authToken, gameID);
+            send(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
         }
     }
-    public void move() {
-
+    public void move(String authToken, int gameID, ChessMove move) throws ResponseException {
+        try {
+            MoveCommand command = new MoveCommand(authToken, gameID, move);
+            send(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
-    public void leave() {
-
+    public void leave(String authToken, int gameID, ChessMove move) throws ResponseException {
+        try {
+            MoveCommand command = new MoveCommand(authToken, gameID, move);
+            send(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
-    public void connect() {
-
+    public void connect(String authToken, int gameID, ChessMove move) throws ResponseException {
+        try {
+            MoveCommand command = new MoveCommand(authToken, gameID, move);
+            send(new Gson().toJson(command));
+        } catch (IOException e) {
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
 
