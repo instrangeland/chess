@@ -88,7 +88,7 @@ public class WebSocketHandler {
     }
 
     private void makeErrorMessage(int gameID, String username, String message ) throws IOException {
-        String errorJSON = new Gson().toJson(new ErrorMessage(message));
+        String errorJSON = new Gson().toJson(new ErrorMessage("Error: "+message));
         connections.send(username, gameID, errorJSON);;
     }
 
