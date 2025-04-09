@@ -34,17 +34,12 @@ public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
 
-    private final GameDAO gameDAO;
-    private final AuthDAO authDAO;
+    private GameDAO gameDAO;
+    private AuthDAO authDAO;
 
     void sendGame(GameData gameData, int gameID, String username) throws IOException {
         LoadMessage message = new LoadMessage(gameData);
         connections.send(username, gameID, new Gson().toJson(message));
-    }
-
-    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
     }
 
     private String getUsername(String auth) throws AuthenticationException {
@@ -137,6 +132,11 @@ public class WebSocketHandler {
         var message = String.format("%s left the shop", visitorName);
         var notification = new Notification(Notification.Type.DEPARTURE, message);
         connections.broadcast(visitorName, notification);
+    }
+
+    public void setDAOs(GameDAO gameDAO, AuthDAO authDAO) {
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
     }
 
     public void makeMove(String username, String auth, MoveCommand command) throws ResponseException, IOException {

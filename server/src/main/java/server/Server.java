@@ -23,6 +23,7 @@ public class Server {
     static private final LogoutHandler LOGOUT_HANDLER = new LogoutHandler();
     static private final NewGameHandler NEW_GAME_HANDLER = new NewGameHandler();
     static private final RegistrationHandler REGISTRATION_HANDLER = new RegistrationHandler();
+    static private final WebSocketHandler WEB_SOCKET_HANDLER = new WebSocketHandler();
 
 
     public int run(int desiredPort) {
@@ -35,10 +36,12 @@ public class Server {
         GameService.setGameDAO(gameDAO);
         UserService.setUserDAO(userDAO);
 
+        WEB_SOCKET_HANDLER.setDAOs(gameDAO, authDAO);
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-        Spark.webSocket("/ws", webSocketHandler);
+        Spark.webSocket("/ws", WEB_SOCKET_HANDLER);
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", CLEAR_HANDLER::handleRequest);
