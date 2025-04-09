@@ -7,13 +7,10 @@ import model.GameData;
 import model.GameID;
 import model.UserData;
 import request.JoinGameRequest;
-import ui.Repl;
 import server.ServerFascade;
-import ui.EscapeSequences.*;
+import websocketFacade.NotificationHandler;
+import websocketFacade.WebSocketFacade;
 
-import javax.naming.OperationNotSupportedException;
-
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,13 +21,15 @@ public class Client {
     private final ServerFascade server;
     private final String serverURL;
     private final Repl repl;
+    private WebSocketFacade ws;
     private List<GameData> games = null;
     private ChessGame currentGame = null;
     private BoardUI.Perspective currentPerspective = null;
-    public Client(String serverURL, Repl repl) {
+    public Client(String serverURL, NotificationHandler repl) {
         server = new ServerFascade(serverURL);
         this.serverURL = serverURL;
         this.repl = repl;
+        ws = new WebSocketFacade(this.serverURL, repl);
     }
 
     public String eval(String in) {

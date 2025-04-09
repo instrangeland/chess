@@ -1,4 +1,4 @@
-package websocketFascade;
+package websocketFacade;
 
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadMessage;

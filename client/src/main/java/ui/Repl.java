@@ -1,11 +1,9 @@
 package ui;
 
-import chess.ChessGame;
-import ui.Client;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadMessage;
 import websocket.messages.NotificationMessage;
-import websocketFascade.NotificationHandler;
+import websocketFacade.NotificationHandler;
 
 import java.util.Scanner;
 
