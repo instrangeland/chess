@@ -1,4 +1,4 @@
-package websocketFacade;
+package websocketfacade;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -87,15 +87,10 @@ public class WebSocketFacade extends Endpoint {
         }
     }
     public void observe(String authToken, int gameID) throws ResponseException {
-        try {
-            ConnectCommand command = new ConnectCommand(authToken, gameID);
-            send(new Gson().toJson(command));
-        } catch (IOException e) {
-            throw new ResponseException(500, e.getMessage());
-        }
+        join(authToken, gameID);
     }
 
-    public void join(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
+    public void join(String authToken, int gameID) throws ResponseException {
         try {
             ConnectCommand command = new ConnectCommand(authToken, gameID);
             send(new Gson().toJson(command));

@@ -4,7 +4,7 @@ import model.GameData;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadMessage;
 import websocket.messages.NotificationMessage;
-import websocketFacade.NotificationHandler;
+import websocketfacade.NotificationHandler;
 
 import java.util.Scanner;
 

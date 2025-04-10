@@ -2,7 +2,6 @@ package ui;
 
 import chess.ChessGame;
 import chess.ChessMove;
-import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
@@ -11,9 +10,8 @@ import model.GameID;
 import model.UserData;
 import request.JoinGameRequest;
 import server.ServerFascade;
-import websocket.messages.NotificationMessage;
-import websocketFacade.NotificationHandler;
-import websocketFacade.WebSocketFacade;
+import websocketfacade.NotificationHandler;
+import websocketfacade.WebSocketFacade;
 
 import java.util.List;
 import java.util.Objects;
@@ -202,7 +200,7 @@ public class Client {
             }
             currentGame = games.get(num-1);
             //  BoardUI.drawBoard(currentGame.game(), perspective, null);
-            ws.join(currentAuth.authToken(), game.gameID(), color);
+            ws.join(currentAuth.authToken(), game.gameID());
             userState = State.INGAME;
             return "Joined game " +num;
         } catch (ResponseException e) {
