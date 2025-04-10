@@ -162,13 +162,13 @@ public class ChessGame {
                 board.addPiece(moveWithExtraInfo.getEnPassantPieceToKill(), null); //the piece is killed
             }
             executeMoveNoCheck(move, board);
+            System.out.println("made move");
             currentPiece.setHasMoved(true);
         } else {
             throw new InvalidMoveException();
         }
         currentPlayer = currentPlayer.oppositeColor();
         board.clearAllEnPassantable(currentPlayer);
-
     }
 
     private void executeMoveNoCheck(ChessMove move, ChessBoard board) {
@@ -230,7 +230,13 @@ public class ChessGame {
         for (ChessPosition position : myPositions) {
             possibleMoves.addAll(validMoves(position));
         }
-        return possibleMoves.isEmpty();
+//        System.out.println(possibleMoves);
+        if (possibleMoves.isEmpty()) {
+            gameDone = true;
+            winningTeam = teamColor.oppositeColor();
+            return true;
+        }
+        return false;
     }
 
     public boolean isInCheckmate(TeamColor teamColor) {

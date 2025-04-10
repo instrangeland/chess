@@ -1,5 +1,6 @@
 package ui;
 
+import model.GameData;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadMessage;
 import websocket.messages.NotificationMessage;
@@ -22,16 +23,24 @@ public class Repl implements NotificationHandler {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
+
         while (!result.equals("quit")) {
             printPrompt();
             String line = scanner.nextLine();
 
             try {
                 result = client.eval(line);
-                System.out.print(result);
+                if (result != null) {
+                    System.out.print(result);
+                } else {
+                    System.out.println();
+                }
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
+            }
+            if (result == null) {
+                result = "";
             }
         }
         System.out.println();
@@ -43,16 +52,23 @@ public class Repl implements NotificationHandler {
 
     @Override
     public void notify(NotificationMessage notification) {
-
+        System.out.print(SET_TEXT_COLOR_GREEN + notification.getMessage());
+        printPrompt();
     }
 
     @Override
     public void loadGame(LoadMessage message) {
-
+        System.out.println();
+        GameData game = message.getGame();
+        BoardUI.Perspective perspective = client.getCurrentPerspective();
+        BoardUI.drawBoard(game.game(), perspective, null);
+        printPrompt();
     }
 
     @Override
     public void error(ErrorMessage message) {
+        System.out.print(SET_TEXT_COLOR_RED + message.getErr());
+        printPrompt();
 
     }
 }

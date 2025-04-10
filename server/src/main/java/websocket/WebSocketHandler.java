@@ -39,7 +39,9 @@ public class WebSocketHandler {
 
     void sendGame(GameData gameData, int gameID, String username) throws IOException {
         LoadMessage message = new LoadMessage(gameData);
-        connections.send(username, gameID, new Gson().toJson(message));
+        System.out.println("sending game to "+username);
+        String json = new Gson().toJson(message);
+        connections.send(username, gameID, json);
     }
 
     private String getUsername(String auth) throws AuthenticationException {
@@ -63,7 +65,7 @@ public class WebSocketHandler {
                     break;
                 case MAKE_MOVE:
                     MoveCommand moveCommand = new Gson().fromJson(message, MoveCommand.class);
-                    makeMove(auth, moveCommand);
+                    makeMove(username, moveCommand);
                     break;
                 case LEAVE:
                     LeaveCommand leaveCommand = new Gson().fromJson(message, LeaveCommand.class);
@@ -75,10 +77,9 @@ public class WebSocketHandler {
                     break;
             }
         }
-        catch (ResponseException e) {
-
-        } catch (AuthenticationException e) {
-            throw new RuntimeException(e);
+        catch (AuthenticationException | ResponseException e) {
+            String errorMessage = new Gson().toJson(new ErrorMessage(e.getMessage()));
+            session.getRemote().sendString(errorMessage);
         }
     }
 
@@ -89,7 +90,7 @@ public class WebSocketHandler {
 
     private void makeErrorMessage(int gameID, String username, String message ) throws IOException {
         String errorJSON = new Gson().toJson(new ErrorMessage("Error: "+message));
-        connections.send(username, gameID, errorJSON);;
+        connections.send(username, gameID, errorJSON);
     }
 
     private void join(String username, Session session, ConnectCommand command) throws IOException {
@@ -105,21 +106,26 @@ public class WebSocketHandler {
             makeErrorMessage(gameID, username, "No such gameID: " + gameID);
             return;
         }
-        if (command.isObserve()) {
+
+        String blackUser = getTeamUsername(gameData, ChessGame.TeamColor.BLACK);
+        String whiteUser = getTeamUsername(gameData, ChessGame.TeamColor.WHITE);
+
+        if (!username.equals(blackUser) && !username.equals(whiteUser)) {
             NotificationMessage message = new NotificationMessage("Player "+username +
                     " has joined as an observer.");
             connections.broadcast(username, gameID, message);
         } else {
-            if (!(Objects.equals(username, getTeamUsername(gameData, command.getColor())))) {
-                makeErrorMessage(gameID, username, "Cannot join as " + command.getColor().toString()
-                        + ", player "+getTeamUsername(gameData, command.getColor()) + " is that color.");
-                return;
+            NotificationMessage message;
+            if (username.equals(whiteUser)) {
+                message = new NotificationMessage("Player " + username +
+                        " has joined as white team .");
+            } else {
+                message = new NotificationMessage("Player " + username +
+                        " has joined as black team .");
             }
-            NotificationMessage message = new NotificationMessage("Player "+username +
-                    " has joined as team "+ command.getColor().toString() + ".");
             connections.broadcast(username, gameID, message);
-            sendGame(gameData, gameID, username);
         }
+        sendGame(gameData, gameID, username);
     }
 
     private void resign(String username, ResignCommand command) throws IOException {
@@ -136,13 +142,21 @@ public class WebSocketHandler {
         if (!username.equals(getTeamUsername(gameData, ChessGame.TeamColor.WHITE)) &&
                 !username.equals(getTeamUsername(gameData, ChessGame.TeamColor.BLACK)) ) {
             makeErrorMessage(gameID, username, "You are not a player");
+            return;
         }
+        if (gameData.game().isGameDone()) {
+            makeErrorMessage(gameID, username, "The game is already done!");
+            return;
+        }
+        System.out.println(username+ " is resigning");
         if (username.equals(getTeamUsername(gameData, ChessGame.TeamColor.WHITE))) {
             gameData.game().resign(ChessGame.TeamColor.WHITE);
         } else {
             gameData.game().resign(ChessGame.TeamColor.BLACK);
         }
         connections.broadcast(username, gameID, new NotificationMessage(username + " resigns!"));
+        connections.send(username, gameID, new Gson().toJson(new NotificationMessage("you resigned")));
+        gameDAO.updateGameData(gameID, gameData);
     }
 
 
@@ -156,6 +170,17 @@ public class WebSocketHandler {
         if (gameData == null) {
             makeErrorMessage(gameID, username, "No such gameID: " + gameID);
             return;
+        }
+        String blackUser = getTeamUsername(gameData, ChessGame.TeamColor.BLACK);
+        String whiteUser = getTeamUsername(gameData, ChessGame.TeamColor.WHITE);
+        if (username.equals(blackUser)) {
+            GameData newGameData = new GameData(gameID, gameData.whiteUsername(), null,
+                    gameData.gameName(), gameData.game());
+            gameDAO.updateGameData(gameID, newGameData);
+        } else if (username.equals(whiteUser)) {
+            GameData newGameData = new GameData(gameID, null, gameData.blackUsername(),
+                    gameData.gameName(), gameData.game());
+            gameDAO.updateGameData(gameID, newGameData);
         }
         connections.remove(username, gameID);
         connections.broadcast(username, gameID, new NotificationMessage("Player "+username+ " left the game."));
@@ -180,23 +205,32 @@ public class WebSocketHandler {
         ChessGame game = gameData.game();
         if (game.isGameDone()) {
             makeErrorMessage(gameID, username, "The game is over! No more moves!");
+            return;
         }
 
         ChessGame.TeamColor color = game.getTeamTurn();
+        System.out.println("now it's "+color +" turn");
 
         if (!username.equals(getTeamUsername(gameData, color))) {
             makeErrorMessage(gameID, username, "It is "+getTeamUsername(gameData, color)+"'s turn, not yours");
+            return;
         }
         try {
             game.makeMove(command.getMove());
+            System.out.println(username+" made move. Current turn is "+color);
             connections.broadcast(username, gameID, new NotificationMessage("Player "+username+" made move "
                     +command.getMove()));
+            connections.broadcast(username, gameID, new LoadMessage(gameData));
             sendGame(gameData, gameID, username);
+            System.out.println(username+" made move");
+            gameDAO.updateGameData(gameID, gameData);
         }
         catch (InvalidMoveException e) {
+            System.out.println("invald move");
             if (game.isInCheck(color)) {
                 makeErrorMessage(gameID, username, "The game would still be in check with that move");
-                return;
+            } else {
+                makeErrorMessage(gameID, username, "Invalid move!");
             }
         }
 

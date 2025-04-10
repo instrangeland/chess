@@ -3,7 +3,6 @@ package websocket.commands;
 import chess.ChessMove;
 
 public class MoveCommand extends UserGameCommand{
-    @Override
     public ChessMove getMove() {
         return move;
     }

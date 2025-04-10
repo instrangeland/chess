@@ -1,5 +1,6 @@
 package websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
@@ -20,6 +21,7 @@ public class ConnectionManager {
         }
         Connection connection = new Connection(username, session);
         connectionsByUsername.put(username, connection);
+        connectionsByGameID.put(gameID, connectionsByUsername);
     }
 
     public void remove(String username, int gameID) {
@@ -33,9 +35,13 @@ public class ConnectionManager {
     public void send(String username, int gameID, String message) throws IOException {
         ConcurrentHashMap<String, Connection> connectionsByUsername = connectionsByGameID.get(gameID);
         if (connectionsByUsername == null) {
-            throw new IllegalArgumentException("username "+ username + " does not exist");
+            throw new IllegalArgumentException("gameID "+ gameID + " does not exist");
         }
         Connection connection = connectionsByUsername.get(username);
+        if (connection == null)
+        {
+            throw new IllegalArgumentException("username "+ username + " does not exist");
+        }
         connection.send(message);
     }
 
@@ -53,10 +59,11 @@ public class ConnectionManager {
 
             if (session.isOpen()) {
                 if (!username.equals(excludeUsername)) {
-                    connection.send(message.toString());
-                } else {
-                    removeList.add(connection);
+                    String jsonMsg = new Gson().toJson(message);
+                    connection.send(jsonMsg);
                 }
+            } else {
+                removeList.add(connection);
             }
         }
 

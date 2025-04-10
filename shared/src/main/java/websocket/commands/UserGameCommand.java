@@ -17,7 +17,6 @@ public class UserGameCommand {
     private final String authToken;
 
     private final Integer gameID;
-    private ChessMove move = null;
 
     public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
         this.commandType = commandType;
@@ -31,8 +30,6 @@ public class UserGameCommand {
         LEAVE,
         RESIGN
     }
-
-    public ChessMove getMove() { return move; }
 
     public CommandType getCommandType() {
         return commandType;

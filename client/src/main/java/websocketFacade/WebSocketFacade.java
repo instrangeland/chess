@@ -97,7 +97,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void join(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
         try {
-            ConnectCommand command = new ConnectCommand(authToken, gameID, color);
+            ConnectCommand command = new ConnectCommand(authToken, gameID);
             send(new Gson().toJson(command));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());

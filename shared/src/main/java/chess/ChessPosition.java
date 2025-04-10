@@ -36,7 +36,7 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return String.valueOf(colLabels.charAt(col)) + row;
+        return String.valueOf(colLabels.charAt(col-1)) + row;
     }
 
     public static ChessPosition fromString(String input) throws IllegalArgumentException{

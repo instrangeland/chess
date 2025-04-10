@@ -37,6 +37,21 @@ public class BoardUI {
         printLetterHeader(out, reverse);
         out.print(RESET_TEXT_COLOR);
         out.print(RESET_BG_COLOR);
+        if (game.isGameDone()) {
+            System.out.println("Game is done");
+        }
+        if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            System.out.println("White is in checkmate");
+        } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            System.out.println("Black is in checkmate");
+        } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+            System.out.println("White is in check");
+            System.out.println(game.getTeamTurn() +"'s turn");
+        } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+            System.out.println("Black is in check");
+            System.out.println(game.getTeamTurn() +"'s turn");
+        }
+
     }
 
 

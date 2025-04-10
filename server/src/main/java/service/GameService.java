@@ -41,14 +41,23 @@ public class GameService {
                 throw new BadRequestError();
             }
             GameData newData;
+            System.out.println("user: " + username + ", " + data.blackUsername() + ", " + data.whiteUsername());
             if (teamColor.equals("BLACK")) {
-                if (data.blackUsername() == null) {
+                if (username.equals(data.blackUsername())) {
+                    System.out.println("Player rejoining");
+                    return;
+                }
+                else if (data.blackUsername() == null) {
                     newData = new GameData(data.gameID(), data.whiteUsername(), username, data.gameName(), data.game());
                 } else {
                     throw new TakenError();
                 }
             } else {
-                if (data.whiteUsername() == null) {
+                if (username.equals(data.whiteUsername())) {
+                    System.out.println("Player rejoining");
+                    return;
+                }
+                else if (data.whiteUsername() == null) {
                     newData = new GameData(data.gameID(), username, data.blackUsername(), data.gameName(), data.game());
                 } else {
                     throw new TakenError();
